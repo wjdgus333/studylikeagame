@@ -204,7 +204,9 @@ ui: [
 "Feminino",
 "A arte de todas as classes muda para o gênero escolhido. (Seus personagens próprios não mudam.)",
 "Ver estágios",
-"Ocultar"
+"Ocultar",
+"Ver todas as classes",
+"Recolher"
 ],
 jobs: [
 "Guerreiro", "Mago", "Arqueiro", "Ladino", "Pirata", "Elfo", "Ogro", "Fada", "Centauro",

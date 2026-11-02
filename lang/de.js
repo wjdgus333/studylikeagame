@@ -204,7 +204,9 @@ ui: [
 "Weiblich",
 "Alle Klassenbilder wechseln zum gewählten Geschlecht. (Eigene Figuren bleiben gleich.)",
 "Stufen anzeigen",
-"Ausblenden"
+"Ausblenden",
+"Alle Klassen zeigen",
+"Einklappen"
 ],
 jobs: [
 "Krieger", "Magier", "Bogenschütze", "Schurke", "Pirat", "Elf", "Oger", "Fee", "Zentaur",

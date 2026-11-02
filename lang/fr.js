@@ -204,7 +204,9 @@ ui: [
 "Femme",
 "Les dessins de tous les métiers passent au genre choisi. (Vos personnages perso ne changent pas.)",
 "Voir les niveaux",
-"Masquer"
+"Masquer",
+"Voir tous les métiers",
+"Réduire"
 ],
 jobs: [
 "Guerrier", "Mage", "Archer", "Voleur", "Pirate", "Elfe", "Ogre", "Fée", "Centaure",

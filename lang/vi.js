@@ -204,7 +204,9 @@ ui: [
 "Nữ",
 "Hình của mọi nghề sẽ đổi theo giới tính đã chọn. (Nhân vật tự tạo giữ nguyên.)",
 "Xem các cấp",
-"Ẩn"
+"Ẩn",
+"Xem tất cả nghề",
+"Thu gọn"
 ],
 jobs: [
 "Chiến binh", "Pháp sư", "Cung thủ", "Đạo tặc", "Hải tặc", "Tiên tộc", "Yêu tinh khổng lồ", "Tiên nữ", "Nhân mã",

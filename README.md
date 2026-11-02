@@ -44,8 +44,14 @@
 
 ## 캐릭터 그림 바꾸기 (선택)
 
-`images/직업-단계.png` 파일을 넣으면 기본 그림 대신 그 이미지를 보여 줘요.
+`images/직업-단계.png` 파일을 넣고, 넣은 파일 이름을 `images/list.json`에 적으면 기본 그림 대신 그 이미지를 보여 줘요.
 예: `images/warrior-1.png` ~ `images/warrior-10.png` (여성 그림은 `images/warrior-f-1.png` ~ `images/warrior-f-10.png`)
+
+```json
+["warrior-1.png", "warrior-2.png", "warrior-f-1.png"]
+```
+
+`list.json`이 없으면 기본 그림만 써요. (없는 그림을 하나하나 찾지 않아서 앱이 빨리 열려요)
 직업 이름: `warrior`(전사), `mage`(마법사), `archer`(궁수), `rogue`(도적), `pirate`(해적), `elf`(엘프), `ogre`(오우거), `fairy`(페어리), `centaur`(켄타우로스), `lich`(리치), `skeleton`(해골기사), `dryad`(드라이어드), `dwarf`(드워프), `berserker`(광전사), `vampire`(뱀파이어), `werewolf`(늑대인간), `naga`(나가), `golem`(골렘), `blacksmith`(대장장이), `nomad`(유목민), `knight`(중세기사), `reaper`(사신)
 
 ## 파일 구성

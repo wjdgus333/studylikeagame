@@ -204,7 +204,9 @@ ui: [
 "Kadın",
 "Tüm meslek çizimleri seçilen cinsiyete göre değişir. (Kendi karakterlerin aynı kalır.)",
 "Aşamaları göster",
-"Gizle"
+"Gizle",
+"Tüm meslekleri göster",
+"Daralt"
 ],
 jobs: [
 "Savaşçı", "Büyücü", "Okçu", "Hırsız", "Korsan", "Elf", "Dev", "Peri", "Sentor",

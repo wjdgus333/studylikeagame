@@ -204,7 +204,9 @@ ui: [
 "Wanita",
 "Gambar semua profesi berubah sesuai jenis kelamin yang dipilih. (Karakter buatanmu tetap.)",
 "Lihat tahap",
-"Sembunyikan"
+"Sembunyikan",
+"Lihat semua profesi",
+"Ciutkan"
 ],
 jobs: [
 "Prajurit", "Penyihir", "Pemanah", "Pencuri", "Bajak Laut", "Elf", "Ogre", "Peri", "Centaur",

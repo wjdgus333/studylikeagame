@@ -204,7 +204,9 @@ ui: [
 "Female",
 "All job art changes to the chosen gender. (Your own characters stay the same.)",
 "Show stages",
-"Hide"
+"Hide",
+"Show all jobs",
+"Collapse"
 ],
 jobs: [
 "Warrior", "Mage", "Archer", "Rogue", "Pirate", "Elf", "Ogre", "Fairy", "Centaur",
