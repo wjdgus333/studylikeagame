@@ -1,0 +1,1209 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1b1640">
+<meta name="description" content="공부와 운동을 기록하면 캐릭터가 성장하는 자기계발 RPG">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>레벨업 라이프</title>
+<style>
+:root{--bg:#141030;--bg2:#1f1a4a;--card:#272157;--card2:#312a6b;--line:rgba(255,255,255,.1);
+  --text:#f4f2ff;--sub:#b9b3e6;--gold:#ffc94d;--accent:#8b7bff;--good:#3ddc97;--bad:#ff6b7a}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,system-ui,"Apple SD Gothic Neo","Malgun Gothic","Segoe UI",Roboto,"Noto Sans",sans-serif;
+  -webkit-user-select:none;user-select:none}
+input,select,button{font:inherit}
+#app{max-width:520px;margin:0 auto;min-height:100vh;min-height:100dvh;padding:16px 16px calc(84px + env(safe-area-inset-bottom))}
+h1,h2,h3{margin:0}
+.card{background:var(--card);border-radius:18px;padding:16px;margin-bottom:14px}
+.row{display:flex;align-items:center;gap:10px}
+.sub{color:var(--sub);font-size:13px}
+.btn{border:0;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer;background:var(--card2);color:var(--text)}
+.btn.primary{background:var(--gold);color:#2a1f00}
+.btn.danger{background:#4a1f2e;color:#ffb3bd}
+.btn.block{width:100%}
+.btn:disabled{opacity:.4}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.field label{font-size:13px;color:var(--sub)}
+.field input,.field select{background:var(--bg2);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:11px 12px;font-size:16px;width:100%;-webkit-user-select:text;user-select:text}
+
+/* 하단 탭 */
+nav{position:fixed;left:0;right:0;bottom:0;background:#18133a;border-top:1px solid var(--line);
+  display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom);z-index:5}
+nav .in{display:flex;max-width:520px;width:100%}
+nav button{flex:1;min-width:0;background:none;border:0;color:var(--sub);padding:9px 0 11px;font-size:11px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button span{font-size:19px}
+nav button em{font-style:normal;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px}
+nav button.on{color:var(--gold)}
+
+/* 언어 선택 */
+.langsel{background:var(--bg2);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:9px 10px;font-size:15px}
+.field .langsel{width:100%}
+
+/* 메모 */
+.memo-in{width:100%;background:var(--bg2);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:12px;font-size:16px;line-height:1.5;resize:vertical;-webkit-user-select:text;user-select:text}
+.memo-q{width:100%;background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:11px 12px;font-size:15px;margin-bottom:12px;-webkit-user-select:text;user-select:text}
+.memo-text{white-space:pre-wrap;word-break:break-word;line-height:1.55;-webkit-user-select:text;user-select:text}
+.memo.pin{border:1px solid var(--gold)}
+
+/* 홈 배경 */
+.hero.has-bg{background-size:cover;background-position:center}
+.hero.has-bg::before{content:"";position:absolute;inset:0;background:linear-gradient(rgba(20,16,48,.05) 0%,rgba(20,16,48,.15) 45%,rgba(20,16,48,.88) 68%)}
+.hero.has-bg>*{position:relative;z-index:1}
+.bgs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.bgs button{aspect-ratio:3/4;border-radius:12px;border:3px solid transparent;background:var(--bg2);background-size:cover;background-position:center;color:#fff;cursor:pointer;display:flex;align-items:flex-end;justify-content:center;padding:0 2px 5px;font-size:11px;font-weight:700;text-shadow:0 1px 3px #000}
+.bgs button.on{border-color:var(--gold)}
+.bgs button.up{border:2px dashed var(--line);align-items:center;text-shadow:none;color:var(--sub)}
+
+/* 캐릭터 */
+.hero{text-align:center;position:relative;overflow:hidden}
+.hero-stage{width:200px;height:250px;margin:0 auto -6px;display:block}
+.hero-svg,.hero-img{width:100%;height:100%}
+.hero-img{object-fit:contain;display:block}
+.hero-name{font-size:20px;font-weight:800}
+.title-pill{display:inline-block;margin-top:6px;padding:4px 12px;border-radius:999px;font-size:13px;font-weight:700}
+.bar{height:14px;background:var(--bg2);border-radius:999px;overflow:hidden;margin:12px 0 6px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#ffb347,var(--gold));border-radius:999px;transition:width .6s}
+.stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.stat{background:var(--bg2);border-radius:12px;padding:10px 6px;text-align:center}
+.stat b{display:block;font-size:18px}
+.stat small{color:var(--sub);font-size:11px}
+.dots{display:flex;justify-content:center;gap:5px;margin-top:10px}
+.dots i{width:9px;height:9px;border-radius:50%;background:var(--bg2)}
+.dots i.on{background:var(--gold)}
+
+/* 활동 버튼 */
+.acts{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.act{background:var(--card2);border:0;color:var(--text);border-radius:14px;padding:14px 12px;text-align:left;cursor:pointer;display:flex;gap:10px;align-items:center}
+.act:active{transform:scale(.97)}
+.act .ic{font-size:26px}
+.act b{display:block;font-size:15px}
+.act small{color:var(--sub);font-size:12px}
+
+/* 목록 */
+.list{display:flex;flex-direction:column}
+.item{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}
+.item .ic{font-size:24px;width:32px;text-align:center}
+.item .grow{flex:1;min-width:0}
+.item .grow b{display:block;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .pts{font-weight:800;color:var(--gold);white-space:nowrap}
+.iconbtn{background:var(--bg2);border:0;color:var(--sub);width:34px;height:34px;border-radius:10px;cursor:pointer;font-size:15px}
+.day{font-size:13px;color:var(--sub);margin:14px 2px 2px;display:flex;justify-content:space-between}
+.tag{font-size:11px;padding:2px 7px;border-radius:999px;background:var(--bg2);color:var(--sub);margin-left:6px;font-weight:600}
+.tag.bonus{background:#3b2f0c;color:var(--gold)}
+
+.chart{display:flex;align-items:flex-end;gap:8px;height:120px;margin-top:12px}
+.chart div{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
+.chart i{width:100%;background:var(--accent);border-radius:6px 6px 2px 2px;min-height:3px}
+.chart div.today i{background:var(--gold)}
+.chart small{font-size:11px;color:var(--sub)}
+.chart em{font-style:normal;font-size:10px;color:var(--sub)}
+
+/* 모달 */
+.modal{position:fixed;inset:0;background:rgba(5,3,20,.7);display:none;align-items:flex-end;justify-content:center;z-index:10}
+.modal.show{display:flex}
+.sheet{background:var(--card);width:100%;max-width:520px;border-radius:22px 22px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom));max-height:90vh;overflow:auto;animation:up .25s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:.5}}
+.sheet h2{font-size:19px;margin-bottom:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.chips button{background:var(--bg2);border:1px solid var(--line);color:var(--text);border-radius:999px;padding:8px 14px;cursor:pointer}
+.preview{background:var(--bg2);border-radius:12px;padding:12px;margin-bottom:14px;font-size:14px;line-height:1.6}
+.preview b{color:var(--gold);font-size:20px}
+.emojis{display:flex;flex-wrap:wrap;gap:6px}
+.emojis button{font-size:22px;width:42px;height:42px;border-radius:10px;border:2px solid transparent;background:var(--bg2);cursor:pointer}
+.emojis button.on{border-color:var(--gold)}
+.seg{display:flex;gap:6px}
+.seg button{flex:1;padding:10px 0;border-radius:10px;border:1px solid var(--line);background:var(--bg2);color:var(--text);cursor:pointer}
+.seg button.on{background:var(--accent);border-color:var(--accent);font-weight:700}
+
+/* 직업 선택 */
+.classes{display:grid;grid-template-columns:1fr;gap:10px;margin:14px 0}
+.cls{display:flex;align-items:center;gap:10px;background:var(--card2);border:2px solid transparent;border-radius:16px;padding:8px 12px;cursor:pointer;color:var(--text);text-align:left}
+.cls.on{border-color:var(--gold)}
+.cls .mini{width:56px;height:70px;flex:0 0 auto}
+.cls .arrow{color:var(--sub);font-size:18px}
+.cls .grow{flex:1}
+.cls b{font-size:16px}
+
+/* 연출 */
+.toast{position:fixed;left:50%;top:22%;transform:translateX(-50%);z-index:20;pointer-events:none;text-align:center}
+.toast div{background:rgba(20,16,48,.92);border:2px solid var(--gold);color:var(--gold);font-weight:900;font-size:26px;padding:12px 22px;border-radius:16px;animation:pop 1.6s ease-out forwards;white-space:nowrap}
+.toast div small{display:block;font-size:13px;color:#fff;font-weight:700}
+@keyframes pop{0%{transform:scale(.6);opacity:0}15%{transform:scale(1.08);opacity:1}25%{transform:scale(1)}80%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-40px)}}
+.evolve{text-align:center}
+.evolve .hero-stage{animation:glow 1.2s ease-in-out infinite alternate}
+@keyframes glow{from{filter:drop-shadow(0 0 4px #ffc94d)}to{filter:drop-shadow(0 0 22px #ffc94d)}}
+.empty{color:var(--sub);text-align:center;padding:24px 0;font-size:14px}
+.hidden{display:none!important}
+
+/* 통계 차트 */
+.seg.period button{padding:9px 0;font-size:15px}
+.big-stat{display:flex;align-items:baseline;gap:8px;margin:2px 0 4px;flex-wrap:wrap}
+.big-stat b{font-size:28px}
+.chg{font-size:14px;font-weight:700}
+.chg.up{color:#ff8a80}.chg.down{color:#82b1ff}.chg.flat{color:var(--sub)}
+.chartbox{position:relative;margin-top:8px;touch-action:pan-y}
+.chartbox svg{display:block;width:100%;height:auto;overflow:visible}
+.chartbox .grid{stroke:rgba(255,255,255,.08);stroke-width:1}
+.chartbox .axis{fill:var(--sub);font-size:10px}
+.chartbox .line{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.chartbox .cross{stroke:rgba(255,255,255,.35);stroke-width:1;stroke-dasharray:3 3}
+.tip{position:absolute;top:0;background:#0f0c26;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:12px;pointer-events:none;min-width:130px;z-index:2}
+.tip b{display:block;margin-bottom:4px;font-size:13px}
+.tip div{display:flex;align-items:center;gap:10px;justify-content:space-between;line-height:1.6}
+.tip span{display:flex;align-items:center;gap:6px;color:var(--sub)}
+.sw{width:10px;height:10px;border-radius:3px;flex:0 0 auto;display:inline-block}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:10px;font-size:12px;color:var(--sub)}
+.legend span{display:flex;align-items:center;gap:5px}
+.rank .no{width:22px;font-weight:800;color:var(--sub);text-align:center}
+.rank .share{height:6px;background:var(--bg2);border-radius:999px;margin-top:5px;overflow:hidden}
+.rank .share i{display:block;height:100%;border-radius:999px}
+.rank .r{text-align:right;white-space:nowrap}
+.rank .from{font-size:12px;color:var(--sub);margin-top:4px;white-space:normal;line-height:1.5}
+
+/* 직업 카테고리 */
+.jobfilter::-webkit-scrollbar{display:none}
+.statusbtn{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:12px;color:var(--text);cursor:pointer;font-weight:700;font-size:15px}
+.statusbtn small{color:var(--sub);font-weight:600;font-size:12px}
+.lvlist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.lv{display:flex;align-items:center;gap:6px;background:var(--bg2);border:2px solid transparent;border-radius:10px;padding:7px 8px;min-width:0}
+.lv.on{border-color:var(--c)}
+.lv.zero{opacity:.45}
+.lv .ic{font-size:18px}
+.lv b{flex:1;min-width:0;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lv .lvn{font-weight:800;font-size:13px;color:var(--c);white-space:nowrap}
+.lv .lvn small{color:var(--sub);font-weight:600;font-size:10px}
+.swatches{display:flex;flex-wrap:wrap;gap:8px}
+.swatches button{width:32px;height:32px;border-radius:50%;border:3px solid transparent;cursor:pointer}
+.swatches button.on{border-color:#fff}
+.stagepick{display:flex;gap:6px}
+.field .stagepick input{width:72px;flex:0 0 72px;text-align:center}
+.stagepick button{flex:1;background:var(--bg2);border:1px solid var(--line);color:var(--text);border-radius:10px;cursor:pointer;font-weight:700}
+.slots{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.slot{display:flex;flex-direction:column;gap:4px}
+.slot .pic{position:relative;aspect-ratio:3/4;border-radius:10px;border:2px dashed var(--line);background:var(--bg2);color:var(--sub);cursor:pointer;padding:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:22px}
+.slot .pic.has{border-style:solid;border-color:var(--accent)}
+.slot .pic img{width:100%;height:100%;object-fit:contain}
+.slot .pic em{position:absolute;left:4px;top:3px;font-style:normal;font-size:11px;font-weight:800;color:#fff;background:#0008;border-radius:6px;padding:0 5px}
+.slot input{background:var(--bg2);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:5px 6px;font-size:12px;width:100%;min-width:0;-webkit-user-select:text;user-select:text}
+.jgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.jcard{min-width:0;position:relative;background:var(--card);border:2px solid transparent;border-radius:16px;padding:10px 10px 12px;color:var(--text);cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:3px}
+.jcard.on{border-color:var(--c);background:var(--card2)}
+.jcard .art{width:100%;height:120px;margin-bottom:2px}
+.jcard b{font-size:15px}
+.jcard small{color:var(--sub);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.jcard .mbar{height:6px;background:var(--bg2);border-radius:999px;overflow:hidden;margin-top:4px}
+.jcard .mbar i{display:block;height:100%;background:var(--c)}
+.jcard .now{position:absolute;top:8px;right:8px;font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px;background:var(--c);color:#1a1530}
+.jcard.add{border:2px dashed var(--line);background:none;align-items:center;justify-content:center;min-height:200px;color:var(--sub)}
+.jcard.add span{font-size:34px;color:var(--gold)}
+.jobfilter{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;padding-bottom:2px;scrollbar-width:none}
+.jobfilter button{flex:0 0 auto;background:var(--bg2);border:1px solid var(--line);color:var(--text);border-radius:999px;padding:7px 12px;cursor:pointer;font-size:13px}
+.jobfilter button.on{background:var(--accent);border-color:var(--accent);font-weight:700}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<nav id="nav" class="hidden"><div class="in">
+  <button data-tab="home" data-label="홈" class="on"><span>🏠</span><em>홈</em></button>
+  <button data-tab="jobs" data-label="직업"><span>🛡️</span><em>직업</em></button>
+  <button data-tab="stats" data-label="통계"><span>📈</span><em>통계</em></button>
+  <button data-tab="log" data-label="기록"><span>📜</span><em>기록</em></button>
+  <button data-tab="acts" data-label="활동"><span>🎯</span><em>활동</em></button>
+  <button data-tab="memo" data-label="메모"><span>📝</span><em>메모</em></button>
+  <button data-tab="settings" data-label="설정"><span>⚙️</span><em>설정</em></button>
+</div></nav>
+
+<div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+
+<script src="hero.js"></script>
+<script>
+const STAGE_XP = 500;   // 한 단계 성장에 필요한 포인트
+const MAX_STAGE = 10;   // 기본 직업의 최종 단계 (내 캐릭터는 단계 수를 직접 정함)
+const KEY = 'levelup-v1';
+const LANG_KEY = 'levelup-lang';
+const EMOJIS = ['📚','📖','✏️','💻','🧠','🗣️','🎹','🎨','🏃','💪','🧘','🚴','🏊','⚽','🥗','💧','😴','🧹','📝','🌱','⭐','🎯'];
+const UNITS = ['분','회','쪽','개','km','세트','문제','번'];
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const dayKey = (t = Date.now()) => new Date(t).toLocaleDateString('sv');  // YYYY-MM-DD
+
+// ---------- 언어 ----------
+// 한국어 문장이 번역의 열쇠. lang/keys.js 의 한국어 목록과 lang/언어.js 의 번역 목록이 같은 순서. 없으면 한국어 그대로
+const LANGS = {
+  ko: ['한국어', 'ko-KR'], en: ['English', 'en-US'], ja: ['日本語', 'ja-JP'], 'zh-CN': ['简体中文', 'zh-CN'], 'zh-TW': ['繁體中文', 'zh-TW'],
+  es: ['Español', 'es-ES'], pt: ['Português', 'pt-BR'], fr: ['Français', 'fr-FR'], de: ['Deutsch', 'de-DE'], id: ['Bahasa Indonesia', 'id-ID'],
+  vi: ['Tiếng Việt', 'vi-VN'], th: ['ไทย', 'th-TH'], ru: ['Русский', 'ru-RU'], tr: ['Türkçe', 'tr-TR'], hi: ['हिन्दी', 'hi-IN'],
+};
+window.I18N = window.I18N || {};
+let lang = 'ko', L = {}, LOCALE = 'ko-KR';
+function t(s, v) {
+  let r = L[s] ?? s;
+  if (v) r = r.replace(/\{(\w+)\}/g, (_, k) => v[k] ?? '');
+  return r;
+}
+function guessLang() {
+  try { const s = localStorage.getItem(LANG_KEY); if (LANGS[s]) return s; } catch (e) {}
+  for (const n of navigator.languages || [navigator.language || 'en']) {
+    const l = n.toLowerCase();
+    if (l.startsWith('zh')) return /tw|hk|mo|hant/.test(l) ? 'zh-TW' : 'zh-CN';
+    const p = l.split('-')[0];
+    if (LANGS[p]) return p;
+  }
+  return 'en';
+}
+const loadScript = src => new Promise(ok => {
+  const s = document.createElement('script');
+  s.src = src; s.onload = ok; s.onerror = ok;
+  document.head.appendChild(s);
+});
+// 번역 파일을 고치면 APP_V 를 올려서 옛 파일(브라우저 캐시)이 쓰이지 않게 함
+const APP_V = '1.6';
+async function loadLang(code) {
+  if (code === 'ko' || I18N[code]) return;
+  if (!window.I18N_KEYS) await loadScript(`lang/keys.js?v=${APP_V}`);
+  await loadScript(`lang/${code}.js?v=${APP_V}`);
+}
+// 번역 목록(배열)을 { 한국어: 번역 } 으로
+function dict(code) {
+  const tr = I18N[code], K = window.I18N_KEYS, out = {};
+  if (!tr || !K) return out;
+  for (const part of ['ui', 'jobs', 'stages']) K[part].forEach((k, i) => { if (tr[part]?.[i]) out[k] = tr[part][i]; });
+  return out;
+}
+// 기본 직업 이름·단계 이름도 고른 언어로 바꿈 (원래 한국어는 c.ko 에 보관)
+function applyLang() {
+  L = lang === 'ko' ? {} : dict(lang);
+  LOCALE = LANGS[lang][1];
+  document.documentElement.lang = lang;
+  document.title = t('레벨업 라이프');
+  for (const c of Object.values(CLASSES)) {
+    if (c.custom) continue;
+    c.ko ||= { name: c.name, stages: c.stages };
+    c.name = t(c.ko.name); c.stages = c.ko.stages.map(s => t(s));
+  }
+  document.querySelectorAll('#nav [data-tab]').forEach(b => b.querySelector('em').textContent = t(b.dataset.label));
+}
+async function setLang(code) {
+  lang = LANGS[code] ? code : 'en';
+  try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
+  await loadLang(lang);
+  applyLang();
+}
+const fmt = n => Math.round(n).toLocaleString(LOCALE);
+const dfmt = (d, o) => new Intl.DateTimeFormat(LOCALE, o).format(d);
+const tu = u => t(u);                                   // 단위 (분, 쪽 …)
+const amt = (n, u) => t('{n}{u}', { n, u: tu(u) });     // 30분, 30 min …
+const perUnit = a => t('1{u}당 {r}P', { u: tu(a.unit), r: a.rate });
+function langSelect(id) {
+  return `<select id="${id}" class="langsel">${Object.entries(LANGS).map(([k, [n]]) => `<option value="${k}" ${k === lang ? 'selected' : ''}>${n}</option>`).join('')}</select>`;
+}
+function bindLang(id) {
+  $('#' + id).onchange = async e => { await setLang(e.target.value); render(); };
+}
+
+// 아래 메뉴 글자가 길면(독일어 등) 칸에 맞게 글자 크기를 줄임
+function fitNav() {
+  document.querySelectorAll('#nav em').forEach(e => {
+    let s = 11; e.style.fontSize = '';
+    while (e.scrollWidth > e.clientWidth + 1 && s > 8) e.style.fontSize = (s -= .5) + 'px';
+  });
+}
+addEventListener('resize', () => { if (D) fitNav(); });
+
+// ---------- 저장 ----------
+function defaultActs() {
+  return [
+    { id: uid(), name: '공부', icon: '📚', unit: '분', rate: 1, type: 'study' },
+    { id: uid(), name: '독서', icon: '📖', unit: '쪽', rate: 2, type: 'study' },
+    { id: uid(), name: '운동', icon: '🏃', unit: '분', rate: 2, type: 'workout' },
+  ];
+}
+// 내 캐릭터(사진을 올려 만든 캐릭터)를 직업 목록 뒤에 붙임
+function syncCustom(d) {
+  for (const k of Object.keys(CLASSES)) if (CLASSES[k].custom) delete CLASSES[k];
+  for (const c of d?.custom || []) CLASSES[c.key] = { name: c.name, icon: c.icon, color: c.color, stages: c.stages, imgs: c.imgs, custom: true };
+}
+// 예전 기록(직업 정보 없음)은 그때 고른 직업의 경험치로 넣어줌
+function migrate(d) {
+  d.custom ||= [];
+  d.memos ||= [];
+  syncCustom(d);
+  if (!CLASSES[d.hero.cls]) d.hero.cls = 'warrior';
+  d.logs.forEach(l => { if (!CLASSES[l.cls]) l.cls = d.hero.cls; });
+  return d;
+}
+function load() {
+  try { const d = JSON.parse(localStorage.getItem(KEY)); if (d && d.hero) return migrate(d); } catch (e) {}
+  return null;
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(D)); return true; }
+  catch (e) { toast(t('저장 공간이 부족해요'), t('사진 수를 줄이거나 내 캐릭터를 지워 주세요'), true); return false; }
+}
+let D = load();
+let tab = 'home';
+
+// ---------- 계산 ----------
+const totalXP = () => D.logs.reduce((s, l) => s + l.xp, 0);
+// 직업마다 경험치·단계가 따로 쌓임 (서로 연동 안 됨)
+const jobXP = cls => D.logs.reduce((s, l) => s + (l.cls === cls ? l.xp : 0), 0);
+const maxOf = cls => CLASSES[cls].stages.length;
+const stageOf = (xp, cls) => Math.min(maxOf(cls), 1 + Math.floor(xp / STAGE_XP));
+const stLabel = n => t('{n}단계', { n });
+function streak() {
+  const days = new Set(D.logs.map(l => dayKey(l.t)));
+  const d = new Date(); d.setHours(12);
+  if (!days.has(dayKey(d.getTime()))) d.setDate(d.getDate() - 1);
+  let n = 0;
+  while (days.has(dayKey(d.getTime()))) { n++; d.setDate(d.getDate() - 1); }
+  return n;
+}
+const todayXP = cls => D.logs.filter(l => dayKey(l.t) === dayKey() && (!cls || l.cls === cls)).reduce((s, l) => s + l.xp, 0);
+// 활동별로 얼마나 얻었는지 한 줄로: "📚 공부 120P · 🏃 운동 80P"
+function fromActs(logs, limit = 4) {
+  const m = {};
+  logs.forEach(l => { const k = l.icon + ' ' + t(l.name); m[k] = (m[k] || 0) + l.xp; });
+  const top = Object.entries(m).sort((a, b) => b[1] - a[1]);
+  return top.slice(0, limit).map(([k, v]) => `${esc(k)} ${fmt(v)}P`).join(' · ') + (top.length > limit ? t(' 외 {n}개', { n: top.length - limit }) : '');
+}
+
+// 포인트 = 양 × 1단위당 포인트
+function calcXP(act, amount) {
+  const xp = Math.round(amount * act.rate);
+  return { base: xp, xp, notes: [] };
+}
+
+// ---------- 화면 ----------
+function render() {
+  if (!D) return renderSetup();
+  $('#nav').classList.remove('hidden');
+  document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
+  fitNav();
+  ({ home: renderHome, jobs: renderJobs, stats: renderStats, log: renderLog, acts: renderActs, memo: renderMemo, settings: renderSettings })[tab]();
+  window.scrollTo(0, 0);
+}
+
+// AI 이미지: images/직업-단계.png 가 있으면 그 이미지를, 없으면 기본 그림을 보여줌
+// 예) images/warrior-1.png ~ images/warrior-10.png
+const ART = new Set();
+let artTimer;
+function probeArt() {
+  for (const cls of Object.keys(CLASSES).filter(k => !CLASSES[k].custom)) for (let s = 1; s <= MAX_STAGE; s++) {
+    const k = `${cls}-${s}`, im = new Image();
+    im.onload = () => {
+      ART.add(k); clearTimeout(artTimer);
+      // 첫 화면에서 이름을 입력 중이면 다시 그리지 않음
+      artTimer = setTimeout(() => { if (D || !$('#nm')?.value) render(); }, 150);
+    };
+    im.src = `images/${k}.png`;
+  }
+}
+function heroArt(cls, stage) {
+  const C = CLASSES[cls];
+  if (C.custom) return `<img class="hero-img" src="${C.imgs[stage - 1]}" alt="${esc(C.stages[stage - 1])}">`;
+  const k = `${cls}-${stage}`;
+  return ART.has(k) ? `<img class="hero-img" src="images/${k}.png" alt="${esc(C.stages[stage - 1])}">` : heroSVG(cls, stage);
+}
+
+function heroBlock(cls, stage, size = '') {
+  return `<div class="hero-stage" style="${size}">${heroArt(cls, stage)}</div>`;
+}
+
+function renderHome() {
+  const xp = jobXP(D.hero.cls), st = stageOf(xp, D.hero.cls), C = CLASSES[D.hero.cls];
+  const max = st >= maxOf(D.hero.cls);
+  const cur = max ? STAGE_XP : xp - (st - 1) * STAGE_XP;
+  const started = Object.keys(CLASSES).filter(k => jobXP(k) > 0).length;
+  $('#app').innerHTML = `
+    <button class="statusbtn" id="allJobs"><span>📋 ${t('전체 직업 현황')}</span><small>${t('{n}개 중 {m}개 키우는 중', { n: Object.keys(CLASSES).length, m: started })} ›</small></button>
+    <div class="card hero ${D.bg ? 'has-bg' : ''}" style="${bgStyle(D.bg)}">
+      ${heroBlock(D.hero.cls, st)}
+      <div class="hero-name">${esc(D.hero.name)}</div>
+      <div class="title-pill" style="background:${C.color}33;color:${C.color}">${C.icon} ${stLabel(st)} · ${esc(C.stages[st - 1])}</div>
+      <div class="dots">${Array.from({ length: maxOf(D.hero.cls) }, (_, i) => `<i class="${i < st ? 'on' : ''}"></i>`).join('')}</div>
+      <div class="bar"><i style="width:${cur / STAGE_XP * 100}%"></i></div>
+      <div class="sub">${max ? `🏆 ${t('최종 단계 달성! 누적 {p}P', { p: fmt(xp) })}` : `${t('다음 단계까지')} <b style="color:var(--gold)">${fmt(STAGE_XP - cur)}P</b> · ${fmt(cur)} / ${STAGE_XP}`}</div>
+      <div class="stats3">
+        <div class="stat"><b>${fmt(todayXP(D.hero.cls))}</b><small>${t('오늘 포인트')}</small></div>
+        <div class="stat"><b>🔥 ${t('{n}일', { n: streak() })}</b><small>${t('연속 기록')}</small></div>
+        <div class="stat"><b>${fmt(xp)}</b><small>${t('{job} 누적', { job: esc(C.name) })}</small></div>
+      </div>
+      ${xp ? `<p class="sub" style="margin:10px 0 0;font-size:12px">${t('얻은 곳')}: ${fromActs(D.logs.filter(l => l.cls === D.hero.cls))}</p>` : ''}
+    </div>
+    <div class="row" style="justify-content:space-between;margin:4px 2px 10px">
+      <h3>${t('오늘 한 일 기록하기')}</h3><span class="sub">${t('{job}에게 쌓여요', { job: `${C.icon} ${esc(C.name)}` })}</span>
+    </div>
+    ${D.acts.length ? `<div class="acts">${D.acts.map(a => `
+      <button class="act" data-act="${a.id}"><span class="ic">${a.icon}</span>
+        <span><b>${esc(t(a.name))}</b><small>${esc(perUnit(a))}</small></span></button>`).join('')}</div>`
+      : `<div class="card empty">${t('활동이 없어요. 🎯 활동 탭에서 추가해 주세요.')}</div>`}
+  `;
+  document.querySelectorAll('[data-act]').forEach(b => b.onclick = () => openLog(b.dataset.act));
+  $('#allJobs').onclick = showAllJobs;
+}
+
+// 모든 직업의 아이콘·이름·레벨만 간단히 (레벨 높은 순)
+function showAllJobs() {
+  const rows = Object.entries(CLASSES).map(([k, c], i) => ({ k, c, i, xp: jobXP(k), st: stageOf(jobXP(k), k), max: maxOf(k) }))
+    .sort((a, b) => b.st - a.st || b.xp - a.xp || a.i - b.i);
+  const total = rows.reduce((s, r) => s + r.xp, 0), started = rows.filter(r => r.xp).length;
+  openSheet(`
+    <h2>📋 ${t('전체 직업 현황')}</h2>
+    <p class="sub" style="margin:-6px 0 12px">${t('{n}개 중 {m}개 키우는 중', { n: rows.length, m: started })} · ${t('모든 직업 합계 {p}P', { p: fmt(total) })}</p>
+    <div class="lvlist">${rows.map(r => `
+      <div class="lv ${r.k === D.hero.cls ? 'on' : ''} ${r.xp ? '' : 'zero'}" style="--c:${r.c.color}">
+        <span class="ic">${r.c.icon}</span><b>${esc(r.c.name)}</b>
+        <span class="lvn">${r.st >= r.max ? '👑 ' : ''}Lv.${r.st}<small>/${r.max}</small></span></div>`).join('')}</div>
+    <p class="sub" style="font-size:12px;margin:10px 0 12px">${t('테두리 = 지금 키우는 직업 · 흐린 것 = 아직 시작 전 · 👑 = 최종 단계')}</p>
+    <button class="btn block" id="toJobs">🛡️ ${t('직업 탭에서 바꾸기')}</button>
+    <button class="btn block" style="margin-top:8px" id="cancel">${t('닫기')}</button>`);
+  $('#toJobs').onclick = () => { closeSheet(); tab = 'jobs'; render(); };
+  $('#cancel').onclick = closeSheet;
+}
+
+function openLog(actId) {
+  const a = D.acts.find(x => x.id === actId), cls = D.hero.cls, C = CLASSES[cls];
+  const chips = a.unit === '분' ? [10, 20, 30, 60, 90] : a.unit === '쪽' ? [5, 10, 20, 50] : [5, 10, 20, 30, 50];
+  openSheet(`
+    <h2>${a.icon} ${esc(t('{act} 기록', { act: t(a.name) }))}</h2>
+    <div class="field"><label>${esc(t('얼마나 했나요? ({u})', { u: tu(a.unit) }))}</label>
+      <input id="amt" type="number" inputmode="decimal" min="0" step="any" placeholder="${esc(t('예: {n}', { n: chips[1] }))}"></div>
+    <div class="chips">${chips.map(n => `<button data-n="${n}">${esc(amt(n, a.unit))}</button>`).join('')}</div>
+    <div class="preview" id="pv"></div>
+    <button class="btn primary block" id="ok">${t('기록하기')}</button>
+    <button class="btn block" style="margin-top:8px" id="cancel">${t('취소')}</button>`);
+  const inp = $('#amt');
+  const upd = () => {
+    const n = parseFloat(inp.value) || 0;
+    const r = calcXP(a, n);
+    $('#pv').innerHTML = n > 0
+      ? `${t('{job}에게 쌓일 포인트', { job: `${C.icon} ${esc(C.name)}` })} <b>+${fmt(r.xp)}P</b>`
+      : `<span class="sub">${esc(perUnit(a))}</span>`;
+    $('#ok').disabled = !(n > 0);
+  };
+  inp.oninput = upd;
+  document.querySelectorAll('.chips button').forEach(b => b.onclick = () => { inp.value = b.dataset.n; upd(); });
+  $('#cancel').onclick = closeSheet;
+  $('#ok').onclick = () => {
+    const n = parseFloat(inp.value) || 0;
+    if (n <= 0) return;
+    const before = stageOf(jobXP(cls), cls);
+    const r = calcXP(a, n);
+    D.logs.push({ id: uid(), t: Date.now(), cls, actId: a.id, name: a.name, icon: a.icon, unit: a.unit, amount: n, base: r.base, xp: r.xp, notes: r.notes });
+    save(); closeSheet(); render();
+    toast(`+${fmt(r.xp)}P`, `${C.icon} ${C.name} · ${t(a.name)} ${amt(n, a.unit)}`);
+    const after = stageOf(jobXP(cls), cls);
+    if (after > before) setTimeout(() => showEvolve(after), 1300);
+  };
+  setTimeout(() => inp.focus(), 250);
+  upd();
+}
+
+function showEvolve(st) {
+  const C = CLASSES[D.hero.cls];
+  openSheet(`<div class="evolve">
+    <h2 style="margin-bottom:4px">✨ ${esc(t('{job} 성장!', { job: C.name }))} ✨</h2>
+    <div class="sub">${stLabel(st - 1)} → <b style="color:var(--gold)">${stLabel(st)}</b></div>
+    ${heroBlock(D.hero.cls, st)}
+    <div class="title-pill" style="background:${C.color}33;color:${C.color};font-size:16px">${C.icon} ${esc(C.stages[st - 1])}</div>
+    <p class="sub">${st === maxOf(D.hero.cls) ? t('최종 단계에 도달했어요. 정말 대단해요! 🏆') : t('다음 모습까지 {p}P! 계속 성장해 봐요.', { p: STAGE_XP })}</p>
+    <button class="btn primary block" id="ok">${t('좋아요!')}</button></div>`);
+  $('#ok').onclick = closeSheet;
+}
+
+// ---------- 직업 (카테고리별로 골라서 키우기) ----------
+const JOB_CATS = {
+  all: { name: '전체', has: () => true },
+  human: { name: '사람', has: (k, c) => !c.custom && HUMAN.includes(k) },
+  race: { name: '종족', has: (k, c) => !c.custom && !HUMAN.includes(k) },
+  mine: { name: '내 캐릭터', has: (k, c) => !!c.custom },
+  growing: { name: '키우는 중', has: k => jobXP(k) > 0 },
+};
+let jobCat = 'all';
+
+function renderJobs() {
+  const cur = D.hero.cls, C = CLASSES[cur];
+  const list = Object.entries(CLASSES).filter(([k, c]) => JOB_CATS[jobCat].has(k, c));
+  const count = cat => Object.entries(CLASSES).filter(([k, c]) => JOB_CATS[cat].has(k, c)).length;
+  $('#app').innerHTML = `
+    <h2 style="margin:4px 2px 6px">🛡️ ${t('직업')}</h2>
+    <p class="sub" style="margin:0 2px 12px">${t('키울 직업을 골라요. 기록한 포인트는 지금 고른 직업에만 쌓여요.')}<br>${t('지금 키우는 직업')}: <b style="color:${C.color}">${C.icon} ${esc(C.name)}</b></p>
+    <div class="jobfilter" id="jcat">${Object.entries(JOB_CATS).map(([k, v]) =>
+      `<button data-cat="${k}" class="${k === jobCat ? 'on' : ''}">${t(v.name)} ${count(k)}</button>`).join('')}</div>
+    <div class="jgrid">${list.map(([k, c]) => {
+      const xp = jobXP(k), st = stageOf(xp, k), max = maxOf(k), p = st >= max ? 100 : (xp - (st - 1) * STAGE_XP) / STAGE_XP * 100;
+      return `<button class="jcard ${k === cur ? 'on' : ''}" data-pick="${k}" style="--c:${c.color}">
+        ${k === cur ? `<span class="now">${t('키우는 중')}</span>` : ''}
+        <div class="art">${heroArt(k, st)}</div>
+        <b>${c.icon} ${esc(c.name)}</b>
+        <small>${t('{n} / {m}단계', { n: st, m: max })} · ${esc(c.stages[st - 1])}</small>
+        <small>${xp ? `${fmt(xp)}P` : t('아직 시작 전')}</small>
+        <div class="mbar"><i style="width:${p}%"></i></div></button>`; }).join('')}
+      ${jobCat === 'all' || jobCat === 'mine' ? `<button class="jcard add" id="addChar"><span>＋</span><b>${t('캐릭터 추가하기')}</b><small>${t('사진으로 만들기')}</small></button>` : ''}</div>
+    ${!list.length ? `<div class="card empty">${jobCat === 'growing' ? t('아직 키우는 직업이 없어요. 직업을 골라 기록해 보세요!') : t('아직 만든 캐릭터가 없어요.')}</div>` : ''}`;
+  document.querySelectorAll('#jcat [data-cat]').forEach(b => b.onclick = () => { jobCat = b.dataset.cat; renderJobs(); });
+  document.querySelectorAll('[data-pick]').forEach(b => b.onclick = () => {
+    const k = b.dataset.pick;
+    if (k === D.hero.cls) return;
+    const y = scrollY;
+    D.hero.cls = k; save(); renderJobs(); scrollTo(0, y);
+    toast(`${CLASSES[k].icon} ${CLASSES[k].name}`, t('이제 기록하면 이 직업이 성장해요'));
+  });
+  $('#addChar')?.addEventListener('click', () => editCustom());
+}
+
+// ---------- 통계 (일/주/월/년 차트) ----------
+// 활동 색: 활동 목록 순서대로 고정 (순위가 바뀌어도 색은 그대로). 8번째부터·지운 활동은 '기타'
+const SERIES_COLORS = ['#3987e5', '#d95926', '#199e70', '#c98500', '#d55181', '#008300', '#9085e9'];
+const OTHER_COLOR = '#8a8597';
+const PERIODS = {
+  day: { name: '일', count: 14, cur: '오늘', prev: '어제', range: '최근 14일', short: '14일' },
+  week: { name: '주', count: 12, cur: '이번 주', prev: '지난주', range: '최근 12주', short: '12주' },
+  month: { name: '월', count: 12, cur: '이번 달', prev: '지난달', range: '최근 12개월', short: '12개월' },
+  year: { name: '년', count: 5, cur: '올해', prev: '작년', range: '최근 5년', short: '5년' },
+};
+let statPeriod = 'day', statMode = 'acts', rankScope = 'cur', statJob = 'all';
+const jobInfo = k => ({ name: CLASSES[k].name, icon: CLASSES[k].icon, color: CLASSES[k].color });
+
+function periodStart(ts, period) {
+  const d = new Date(ts); d.setHours(0, 0, 0, 0);
+  if (period === 'week') d.setDate(d.getDate() - (d.getDay() + 6) % 7); // 월요일 시작
+  if (period === 'month') d.setDate(1);
+  if (period === 'year') d.setMonth(0, 1);
+  return d;
+}
+function buckets(period) {
+  const out = [], now = periodStart(Date.now(), period);
+  const md = d => dfmt(d, { month: 'numeric', day: 'numeric' });
+  for (let i = PERIODS[period].count - 1; i >= 0; i--) {
+    const d = new Date(now);
+    if (period === 'day') d.setDate(d.getDate() - i);
+    if (period === 'week') d.setDate(d.getDate() - i * 7);
+    if (period === 'month') d.setMonth(d.getMonth() - i);
+    if (period === 'year') d.setFullYear(d.getFullYear() - i);
+    let label, full;
+    if (period === 'day') { label = md(d); full = dfmt(d, { month: 'long', day: 'numeric' }); }
+    if (period === 'week') {
+      const e = new Date(d); e.setDate(e.getDate() + 6);
+      label = md(d); full = `${md(d)} ~ ${md(e)}`;
+    }
+    if (period === 'month') { label = dfmt(d, { month: 'short' }); full = dfmt(d, { year: 'numeric', month: 'long' }); }
+    if (period === 'year') { label = `${d.getFullYear()}`; full = dfmt(d, { year: 'numeric' }); }
+    out.push({ key: d.getTime(), label, full });
+  }
+  return out;
+}
+function seriesOf(log) {
+  const i = D.acts.findIndex(a => a.id === log.actId);
+  return i >= 0 && i < SERIES_COLORS.length ? D.acts[i].id : '__other';
+}
+function seriesInfo(id) {
+  if (id === '__other') return { name: t('기타'), icon: '📦', color: OTHER_COLOR };
+  const i = D.acts.findIndex(a => a.id === id);
+  return { name: t(D.acts[i].name), icon: D.acts[i].icon, color: SERIES_COLORS[i] };
+}
+// 세로축 최댓값: 눈금 4칸이 딱 떨어지는 숫자로
+function niceMax(v) {
+  const s = Math.max(v, 8) / 4;
+  const p = Math.pow(10, Math.floor(Math.log10(s)));
+  for (const m of [1, 2, 3, 4, 5, 6, 8, 10]) if (m * p >= s) return m * p * 4;
+}
+function changeHTML(cur, prev) {
+  if (!prev && !cur) return '<span class="chg flat">-</span>';
+  if (!prev) return `<span class="chg up">▲ ${t('새 기록')}</span>`;
+  const pct = Math.round((cur - prev) / prev * 100);
+  if (pct === 0) return '<span class="chg flat">– 0%</span>';
+  return `<span class="chg ${pct > 0 ? 'up' : 'down'}">${pct > 0 ? '▲' : '▼'} ${Math.abs(pct)}%</span>`;
+}
+
+function renderStats() {
+  const P = PERIODS[statPeriod], bs = buckets(statPeriod);
+  const idx = new Map(bs.map((b, i) => [b.key, i]));
+  const byJob = statMode === 'jobs';
+  const keyOf = byJob ? l => l.cls : seriesOf;
+  const info = byJob ? jobInfo : seriesInfo;
+  // 활동별(또는 직업별) · 기간별 포인트 표. 직업을 고르면 그 직업 기록만
+  const data = {}, total = bs.map(() => 0), inRange = [];
+  for (const l of D.logs) {
+    if (statJob !== 'all' && l.cls !== statJob) continue;
+    const i = idx.get(periodStart(l.t, statPeriod).getTime());
+    if (i === undefined) continue;
+    const s = keyOf(l);
+    (data[s] ||= bs.map(() => 0))[i] += l.xp;
+    total[i] += l.xp;
+    inRange.push({ l, i, s });
+  }
+  // 범례 순서 = 활동 목록 순서 (기타는 맨 뒤) / 직업 순서
+  const ids = (byJob ? Object.keys(CLASSES) : [...D.acts.slice(0, SERIES_COLORS.length).map(a => a.id), '__other']).filter(id => data[id]);
+  const last = bs.length - 1;
+  const cur = total[last], prev = total[last - 1];
+
+  // 순위 (직업별일 땐 그 직업이 어떤 활동으로 포인트를 얻었는지도 보여줌)
+  const rankVal = id => rankScope === 'cur' ? data[id][last] : data[id].reduce((a, b) => a + b, 0);
+  const ranked = ids.map(id => ({ id, v: rankVal(id), prev: data[id][last - 1] })).filter(r => r.v > 0).sort((a, b) => b.v - a.v);
+  const rankSum = ranked.reduce((s, r) => s + r.v, 0);
+  const rankFrom = id => fromActs(inRange.filter(x => x.s === id && (rankScope === 'all' || x.i === last)).map(x => x.l));
+  const J = statJob === 'all' ? null : CLASSES[statJob];
+
+  $('#app').innerHTML = `
+    <h2 style="margin:4px 2px 14px">📈 ${t('통계')}</h2>
+    <div class="seg period" id="per" style="margin-bottom:10px">${Object.entries(PERIODS).map(([k, v]) =>
+      `<button data-p="${k}" class="${k === statPeriod ? 'on' : ''}">${t(v.name)}</button>`).join('')}</div>
+    <div class="jobfilter" id="jf"><button data-j="all" class="${statJob === 'all' ? 'on' : ''}">${t('전체 직업')}</button>${Object.entries(CLASSES).map(([k, c]) =>
+      `<button data-j="${k}" class="${k === statJob ? 'on' : ''}">${c.icon} ${esc(c.name)}</button>`).join('')}</div>
+    <div class="card">
+      <div class="sub">${J ? `${J.icon} ${esc(J.name)} · ` : ''}${t('{when} 얻은 포인트', { when: t(P.cur) })}</div>
+      <div class="big-stat"><b>${fmt(cur)}P</b>${changeHTML(cur, prev)}<span class="sub">${t(P.prev)} ${fmt(prev)}P</span></div>
+      <div class="seg" id="mode" style="margin-top:10px">
+        <button data-m="acts" class="${statMode === 'acts' ? 'on' : ''}">${t('활동별')}</button>
+        <button data-m="jobs" class="${statMode === 'jobs' ? 'on' : ''}">${t('직업별')}</button>
+        <button data-m="total" class="${statMode === 'total' ? 'on' : ''}">${t('합계')}</button>
+      </div>
+      <div class="chartbox" id="chart"></div>
+      ${statMode !== 'total' && ids.length ? `<div class="legend">${ids.map(id => { const s = info(id);
+        return `<span><i class="sw" style="background:${s.color}"></i>${s.icon} ${esc(s.name)}</span>`; }).join('')}</div>` : ''}
+      <p class="sub" style="margin:8px 0 0;font-size:12px">${t('그래프를 누르거나 손가락으로 밀어서 날짜별 포인트를 확인하세요')}</p>
+    </div>
+    <div class="card rank">
+      <div class="row" style="justify-content:space-between;margin-bottom:6px"><b>🏆 ${byJob ? t('직업 순위') : t('활동 순위')}</b>
+        <div class="seg" id="scope" style="width:170px">
+          <button data-s="cur" class="${rankScope === 'cur' ? 'on' : ''}" style="padding:6px 0;font-size:13px">${t(P.cur)}</button>
+          <button data-s="all" class="${rankScope === 'all' ? 'on' : ''}" style="padding:6px 0;font-size:13px">${t(P.short)}</button>
+        </div></div>
+      ${ranked.length ? `<div class="list">${ranked.map((r, i) => { const s = info(r.id);
+        return `<div class="item"><span class="no">${i + 1}</span><span class="ic">${s.icon}</span>
+          <div class="grow"><b>${esc(s.name)}</b><div class="share"><i style="width:${r.v / rankSum * 100}%;background:${s.color}"></i></div>
+          ${byJob ? `<div class="from">${rankFrom(r.id)}</div>` : ''}</div>
+          <div class="r"><span class="pts">${fmt(r.v)}P</span><br><span class="sub" style="font-size:12px">${Math.round(r.v / rankSum * 100)}%</span>
+          ${rankScope === 'cur' ? ` · ${changeHTML(r.v, r.prev)}` : ''}</div></div>`; }).join('')}</div>`
+        : `<div class="empty">${t('{when} 기록이 없어요', { when: t(rankScope === 'cur' ? P.cur : P.range) })}</div>`}
+    </div>`;
+
+  document.querySelectorAll('#per button').forEach(b => b.onclick = () => { statPeriod = b.dataset.p; renderStats(); });
+  document.querySelectorAll('#mode button').forEach(b => b.onclick = () => { statMode = b.dataset.m; renderStats(); });
+  document.querySelectorAll('#scope button').forEach(b => b.onclick = () => { rankScope = b.dataset.s; renderStats(); });
+  document.querySelectorAll('#jf button').forEach(b => b.onclick = () => { statJob = b.dataset.j; renderStats(); });
+
+  const lines = statMode === 'total'
+    ? [{ id: 'total', name: t('합계'), icon: '⭐', color: '#ffc94d', vals: total }]
+    : ids.map(id => ({ id, ...info(id), vals: data[id] }));
+  drawChart($('#chart'), bs, lines);
+}
+
+function drawChart(box, bs, lines) {
+  const W = Math.max(260, box.clientWidth), H = 210;
+  const L0 = 38, R = 10, T = 12, B = 24;
+  const n = bs.length, step = (W - L0 - R) / (n - 1);
+  const maxV = niceMax(Math.max(0, ...lines.flatMap(s => s.vals)));
+  const x = i => L0 + i * step, y = v => T + (H - T - B) * (1 - v / maxV);
+  const o = [`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="${esc(t('기간별 포인트 그래프'))}">`];
+  for (let k = 0; k <= 4; k++) {
+    const v = maxV * k / 4;
+    o.push(`<line class="grid" x1="${L0}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/><text class="axis" x="${L0 - 6}" y="${y(v) + 3}" text-anchor="end">${fmt(v)}</text>`);
+  }
+  const every = n > 7 ? 2 : 1;
+  bs.forEach((b, i) => { if ((n - 1 - i) % every === 0) o.push(`<text class="axis" x="${x(i)}" y="${H - 6}" text-anchor="middle">${esc(b.label)}</text>`); });
+  for (const s of lines) {
+    o.push(`<path class="line" stroke="${s.color}" d="${s.vals.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ')}"/>`);
+    o.push(`<circle cx="${x(n - 1)}" cy="${y(s.vals[n - 1])}" r="4" fill="${s.color}" stroke="#272157" stroke-width="2"/>`);
+  }
+  o.push(`<g id="hover"></g><rect x="0" y="0" width="${W}" height="${H}" fill="transparent" id="hit"/></svg><div class="tip hidden" id="tip"></div>`);
+  box.innerHTML = o.join('');
+  if (!lines.length) {
+    box.insertAdjacentHTML('beforeend', `<div class="empty" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">${t('이 기간에 기록이 없어요')}</div>`);
+    return;
+  }
+
+  // 손가락/마우스로 짚은 날짜의 값 보여주기 (주식 차트 십자선)
+  const svg = box.querySelector('svg'), hov = box.querySelector('#hover'), tip = box.querySelector('#tip');
+  const show = e => {
+    const rect = svg.getBoundingClientRect();
+    const px = (e.clientX - rect.left) * (W / rect.width);
+    const i = Math.max(0, Math.min(n - 1, Math.round((px - L0) / step)));
+    hov.innerHTML = `<line class="cross" x1="${x(i)}" x2="${x(i)}" y1="${T}" y2="${H - B}"/>` +
+      lines.map(s => `<circle cx="${x(i)}" cy="${y(s.vals[i])}" r="5" fill="${s.color}" stroke="#272157" stroke-width="2"/>`).join('');
+    const rows = lines.map(s => ({ ...s, v: s.vals[i] })).sort((a, b) => b.v - a.v);
+    const sum = rows.reduce((a, r) => a + r.v, 0);
+    tip.innerHTML = `<b>${esc(bs[i].full)}</b>` + rows.map(r => `<div><span><i class="sw" style="background:${r.color}"></i>${r.icon} ${esc(r.name)}</span><strong>${fmt(r.v)}P</strong></div>`).join('') +
+      (lines.length > 1 ? `<div style="border-top:1px solid var(--line);margin-top:4px;padding-top:4px"><span>${t('합계')}</span><strong>${fmt(sum)}P</strong></div>` : '');
+    tip.classList.remove('hidden');
+    const cx = x(i) * rect.width / W, tw = tip.offsetWidth;
+    tip.style.left = (cx + 12 + tw > rect.width ? cx - 12 - tw : cx + 12) + 'px';
+  };
+  const hide = () => { hov.innerHTML = ''; tip.classList.add('hidden'); };
+  svg.addEventListener('pointerdown', show);
+  svg.addEventListener('pointermove', show);
+  svg.addEventListener('pointerleave', hide);
+}
+
+function renderLog() {
+  const days = {};
+  [...D.logs].sort((a, b) => b.t - a.t).forEach(l => (days[dayKey(l.t)] ||= []).push(l));
+  // 최근 7일 그래프
+  const bars = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const k = dayKey(d.getTime());
+    bars.push({ k, today: i === 0, label: i === 0 ? t('오늘') : dfmt(d, { weekday: 'narrow' }), v: (days[k] || []).reduce((s, l) => s + l.xp, 0) });
+  }
+  const mx = Math.max(10, ...bars.map(b => b.v));
+  const weekSum = bars.reduce((s, b) => s + b.v, 0);
+  // 활동별 합계
+  const byAct = {};
+  D.logs.forEach(l => { const k = l.icon + ' ' + t(l.name); byAct[k] = (byAct[k] || 0) + l.xp; });
+  const top = Object.entries(byAct).sort((a, b) => b[1] - a[1]);
+  const dayName = k => k === dayKey() ? t('오늘') : dfmt(new Date(k + 'T12:00'), { year: 'numeric', month: 'short', day: 'numeric', weekday: 'short' });
+
+  $('#app').innerHTML = `
+    <h2 style="margin:4px 2px 14px">📜 ${t('기록')}</h2>
+    <div class="card">
+      <div class="row" style="justify-content:space-between"><b>${t('최근 7일')}</b><span class="sub">${t('합계')} <b style="color:var(--gold)">${fmt(weekSum)}P</b></span></div>
+      <div class="chart">${bars.map(b => `<div class="${b.today ? 'today' : ''}"><em>${b.v ? fmt(b.v) : ''}</em><i style="height:${b.v / mx * 85}%"></i><small>${esc(b.label)}</small></div>`).join('')}</div>
+    </div>
+    ${top.length ? `<div class="card rank"><b>${t('직업별 누적')}</b><div class="list" style="margin-top:6px">
+      ${Object.entries(CLASSES).filter(([k]) => jobXP(k)).map(([k, c]) => `<div class="item"><span class="ic">${c.icon}</span>
+        <div class="grow"><b>${esc(c.name)} <span class="tag" style="color:${c.color}">${stLabel(stageOf(jobXP(k), k))}</span></b>
+          <div class="from">${fromActs(D.logs.filter(l => l.cls === k), 6)}</div></div>
+        <span class="pts">${fmt(jobXP(k))}P</span></div>`).join('')}</div></div>` : ''}
+    ${top.length ? `<div class="card"><b>${t('활동별 누적')}</b><div class="list" style="margin-top:6px">
+      ${top.map(([k, v]) => `<div class="item"><div class="grow"><b>${esc(k)}</b></div><span class="pts">${fmt(v)}P</span></div>`).join('')}</div></div>` : ''}
+    <div class="card">
+      <b>${t('전체 기록')}</b>
+      ${Object.keys(days).length ? Object.entries(days).map(([k, ls]) => `
+        <div class="day"><span>${esc(dayName(k))}</span><span>${fmt(ls.reduce((s, l) => s + l.xp, 0))}P</span></div>
+        <div class="list">${ls.map(l => `
+          <div class="item"><span class="ic">${l.icon}</span>
+            <div class="grow"><b>${esc(t(l.name))} ${esc(amt(l.amount, l.unit))}</b>
+              <span class="sub">${new Date(l.t).toTimeString().slice(0, 5)}</span><span class="tag" style="color:${CLASSES[l.cls].color}">${CLASSES[l.cls].icon} ${esc(CLASSES[l.cls].name)}</span>${(l.notes || []).map(n => `<span class="tag bonus">${esc(n)}</span>`).join('')}</div>
+            <span class="pts">+${fmt(l.xp)}</span>
+            <button class="iconbtn" data-del="${l.id}" aria-label="${esc(t('지우기'))}">🗑️</button></div>`).join('')}</div>`).join('')
+      : `<div class="empty">${t('아직 기록이 없어요. 홈에서 오늘 한 일을 기록해 보세요!')}</div>`}
+    </div>`;
+  document.querySelectorAll('[data-del]').forEach(b => b.onclick = () => {
+    const l = D.logs.find(x => x.id === b.dataset.del);
+    confirmSheet(t('이 기록을 지울까요?'), `${l.icon} ${esc(t(l.name))} ${esc(amt(l.amount, l.unit))} (+${fmt(l.xp)}P)<br>${t('포인트도 함께 빠져요.')}`, t('지우기'), () => {
+      D.logs = D.logs.filter(x => x.id !== l.id); save(); render();
+    });
+  });
+}
+
+function renderActs() {
+  $('#app').innerHTML = `
+    <h2 style="margin:4px 2px 6px">🎯 ${t('내 활동')}</h2>
+    <p class="sub" style="margin:0 2px 14px">${t('하는 공부·운동을 직접 만들고, 1단위당 몇 포인트를 줄지 정하세요.')}<br>${t('한 단계 성장 = {p}P', { p: STAGE_XP })}</p>
+    <div class="card">${D.acts.length ? `<div class="list">${D.acts.map(a => `
+      <div class="item"><span class="ic">${a.icon}</span>
+        <div class="grow"><b>${esc(t(a.name))}</b>
+          <span class="sub">${esc(perUnit(a))} · ${esc(t('{p}P까지 {n}', { p: STAGE_XP, n: amt(fmt(Math.ceil(STAGE_XP / a.rate)), a.unit) }))}</span></div>
+        <button class="iconbtn" data-edit="${a.id}" aria-label="${esc(t('수정'))}">✏️</button>
+        <button class="iconbtn" data-rm="${a.id}" aria-label="${esc(t('지우기'))}">🗑️</button></div>`).join('')}</div>`
+      : `<div class="empty">${t('활동이 없어요. 아래에서 추가해 보세요!')}</div>`}</div>
+    <button class="btn primary block" id="add">＋ ${t('새 활동 추가')}</button>`;
+  $('#add').onclick = () => editAct();
+  document.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => editAct(b.dataset.edit));
+  document.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => {
+    const a = D.acts.find(x => x.id === b.dataset.rm);
+    confirmSheet(esc(t("'{name}' 활동을 지울까요?", { name: t(a.name) })), t('이미 쌓은 기록과 포인트는 그대로 남아요.'), t('지우기'), () => {
+      D.acts = D.acts.filter(x => x.id !== a.id); save(); render();
+    });
+  });
+}
+
+function editAct(id) {
+  const old = D.acts.find(x => x.id === id);
+  const a = old ? { ...old } : { name: '', icon: '⭐', unit: '분', rate: 1, type: 'study' };
+  const customUnit = !UNITS.includes(a.unit);
+  openSheet(`
+    <h2>${old ? t('활동 수정') : t('새 활동 추가')}</h2>
+    <div class="field"><label>${t('이름')}</label><input id="nm" maxlength="20" placeholder="${esc(t('예: 영어 단어, 코딩, 스쿼트'))}" value="${esc(old ? t(a.name) : '')}"></div>
+    <div class="field"><label>${t('아이콘')}</label><div class="emojis">${EMOJIS.map(e => `<button data-e="${e}" class="${e === a.icon ? 'on' : ''}">${e}</button>`).join('')}</div></div>
+    <div class="field"><label>${t('단위')}</label>
+      <select id="un">${UNITS.map(u => `<option value="${u}" ${u === a.unit ? 'selected' : ''}>${esc(tu(u))}</option>`).join('')}<option value="__custom" ${customUnit ? 'selected' : ''}>${t('직접 입력')}</option></select>
+      <input id="unc" class="${customUnit ? '' : 'hidden'}" maxlength="10" placeholder="${esc(t('예: 강, 챕터'))}" value="${customUnit ? esc(a.unit) : ''}"></div>
+    <div class="field"><label>${t('1단위당 포인트')}</label><input id="rt" type="number" inputmode="decimal" min="0.1" step="any" value="${a.rate}"></div>
+    <div class="preview" id="pv"></div>
+    <button class="btn primary block" id="ok">${t('저장')}</button>
+    <button class="btn block" style="margin-top:8px" id="cancel">${t('취소')}</button>`);
+  const unit = () => $('#un').value === '__custom' ? $('#unc').value.trim() : $('#un').value;
+  const upd = () => {
+    const r = parseFloat($('#rt').value) || 0;
+    const u = unit() || t('단위');
+    $('#pv').innerHTML = r > 0
+      ? `${esc(amt(1, u))} = <b>${r}P</b><br><span class="sub">${esc(t('한 단계({p}P) 성장하려면 약 {n}', { p: STAGE_XP, n: amt(fmt(Math.ceil(STAGE_XP / r)), u) }))}</span>`
+      : `<span class="sub">${t('포인트를 0보다 크게 정해 주세요.')}</span>`;
+  };
+  document.querySelectorAll('[data-e]').forEach(b => b.onclick = () => {
+    a.icon = b.dataset.e; document.querySelectorAll('[data-e]').forEach(x => x.classList.toggle('on', x === b));
+  });
+  $('#un').onchange = () => { $('#unc').classList.toggle('hidden', $('#un').value !== '__custom'); upd(); };
+  $('#unc').oninput = upd; $('#rt').oninput = upd;
+  $('#cancel').onclick = closeSheet;
+  $('#ok').onclick = () => {
+    const typed = $('#nm').value.trim(), rate = parseFloat($('#rt').value), u = unit();
+    if (!typed) return toast(t('이름을 써주세요'), '', true);
+    if (!(rate > 0)) return toast(t('포인트를 확인해 주세요'), '', true);
+    if (!u) return toast(t('단위를 써주세요'), '', true);
+    // 기본 활동 이름을 고치지 않았으면 원래 이름(번역 열쇠)을 그대로 둠
+    const name = old && typed === t(old.name) ? old.name : typed;
+    Object.assign(a, { name, rate, unit: u });
+    if (old) Object.assign(old, a); else D.acts.push({ ...a, id: uid() });
+    save(); closeSheet(); render();
+  };
+  upd();
+}
+
+// ---------- 메모 (아이디어가 떠올랐을 때) ----------
+let memoQuery = '';
+function renderMemo() {
+  const q = memoQuery.trim().toLowerCase();
+  const list = [...D.memos].sort((a, b) => (b.pin ? 1 : 0) - (a.pin ? 1 : 0) || b.t - a.t)
+    .filter(m => !q || m.text.toLowerCase().includes(q));
+  $('#app').innerHTML = `
+    <h2 style="margin:4px 2px 6px">📝 ${t('메모')}</h2>
+    <p class="sub" style="margin:0 2px 12px">${t('아이디어가 떠오르면 바로 적어 두세요.')}</p>
+    <div class="card">
+      <textarea id="memoNew" class="memo-in" rows="3" maxlength="2000" placeholder="${esc(t('떠오른 생각을 적어 보세요'))}"></textarea>
+      <button class="btn primary block" id="memoAdd" style="margin-top:8px">＋ ${t('메모 저장')}</button>
+    </div>
+    ${D.memos.length > 3 ? `<input id="memoQ" class="memo-q" placeholder="🔍 ${esc(t('메모 검색'))}" value="${esc(memoQuery)}">` : ''}
+    ${list.length ? list.map(m => `
+      <div class="card memo ${m.pin ? 'pin' : ''}" data-id="${m.id}">
+        <div class="memo-text">${esc(m.text)}</div>
+        <div class="row" style="justify-content:space-between;margin-top:8px">
+          <span class="sub" style="font-size:12px">${m.pin ? '📌 ' : ''}${esc(dfmt(new Date(m.t), { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }))}${m.edited ? ` · ${t('수정됨')}` : ''}</span>
+          <span class="row" style="gap:6px">
+            <button class="iconbtn" data-mpin="${m.id}" aria-label="${esc(t('고정'))}">${m.pin ? '📌' : '📍'}</button>
+            <button class="iconbtn" data-medit="${m.id}" aria-label="${esc(t('수정'))}">✏️</button>
+            <button class="iconbtn" data-mdel="${m.id}" aria-label="${esc(t('지우기'))}">🗑️</button></span>
+        </div></div>`).join('')
+      : `<div class="empty">${q ? t('찾는 메모가 없어요') : t('아직 메모가 없어요')}</div>`}`;
+  const inp = $('#memoNew');
+  $('#memoAdd').onclick = () => {
+    const text = inp.value.trim();
+    if (!text) return inp.focus();
+    D.memos.push({ id: uid(), t: Date.now(), text });
+    if (!save()) { D.memos.pop(); return; }
+    memoQuery = ''; renderMemo(); toast(t('메모를 저장했어요'), '', true);
+  };
+  if ($('#memoQ')) $('#memoQ').oninput = e => {
+    memoQuery = e.target.value; const pos = e.target.selectionStart;
+    renderMemo(); const qi = $('#memoQ'); qi.focus(); qi.setSelectionRange(pos, pos);
+  };
+  const find = id => D.memos.find(m => m.id === id);
+  document.querySelectorAll('[data-mpin]').forEach(b => b.onclick = () => { const m = find(b.dataset.mpin); m.pin = !m.pin; save(); renderMemo(); });
+  document.querySelectorAll('[data-mdel]').forEach(b => b.onclick = () => {
+    const m = find(b.dataset.mdel);
+    confirmSheet(t('이 메모를 지울까요?'), esc(m.text.slice(0, 80)) + (m.text.length > 80 ? '…' : ''), t('지우기'), () => {
+      D.memos = D.memos.filter(x => x.id !== m.id); save(); renderMemo();
+    });
+  });
+  document.querySelectorAll('[data-medit]').forEach(b => b.onclick = () => {
+    const m = find(b.dataset.medit);
+    openSheet(`<h2>✏️ ${t('메모 수정')}</h2>
+      <textarea id="memoEd" class="memo-in" rows="8" maxlength="2000">${esc(m.text)}</textarea>
+      <button class="btn primary block" id="ok" style="margin-top:10px">${t('저장')}</button>
+      <button class="btn block" style="margin-top:8px" id="cancel">${t('취소')}</button>`);
+    $('#cancel').onclick = closeSheet;
+    $('#ok').onclick = () => {
+      const text = $('#memoEd').value.trim();
+      if (!text) return;
+      m.text = text; m.edited = Date.now(); save(); closeSheet(); renderMemo();
+    };
+  });
+}
+
+function renderSettings() {
+  const C = CLASSES[D.hero.cls];
+  $('#app').innerHTML = `
+    <h2 style="margin:4px 2px 14px">⚙️ ${t('설정')}</h2>
+    <div class="card">
+      <div class="field" style="margin:0"><label>🌐 ${t('언어')} · Language</label>${langSelect('langSel')}</div>
+    </div>
+    <div class="card">
+      <div class="field"><label>${t('캐릭터 이름')}</label><input id="nm" maxlength="12" value="${esc(D.hero.name)}"></div>
+      <button class="btn block" id="saveName">${t('이름 저장')}</button>
+    </div>
+    <div class="card">
+      <b>${t('직업')}</b><p class="sub" style="margin:4px 0 10px">${t('지금 키우는 직업')}: ${C.icon} ${esc(C.name)}<br>${t('직업마다 포인트와 단계가 따로 쌓여요. 기록하면 지금 고른 직업만 성장해요.')}</p>
+      <button class="btn block" id="cls">🛡️ ${t('직업 탭에서 고르기')}</button>
+    </div>
+    <div class="card">
+      <b>${t('내 캐릭터')}</b><p class="sub" style="margin:4px 0 10px">${t('사진을 올려서 나만의 캐릭터를 만들어요. 단계 수(2~30단계)도 직접 정해요.')}</p>
+      ${D.custom.length ? `<div class="list" style="margin-bottom:10px">${D.custom.map(c => `
+        <div class="item"><div style="width:40px;height:50px;flex:0 0 auto">${heroArt(c.key, stageOf(jobXP(c.key), c.key))}</div>
+          <div class="grow"><b>${c.icon} ${esc(c.name)}</b><span class="sub">${t('{n} / {m}단계', { n: stageOf(jobXP(c.key), c.key), m: c.stages.length })} · ${fmt(jobXP(c.key))}P</span></div>
+          <button class="iconbtn" data-cedit="${c.key}" aria-label="${esc(t('수정'))}">✏️</button></div>`).join('')}</div>` : ''}
+      <button class="btn primary block" id="addChar">＋ ${t('캐릭터 추가하기')}</button>
+    </div>
+    <div class="card">
+      <b>🖼️ ${t('홈 배경')}</b><p class="sub" style="margin:4px 0 10px">${t('홈 화면 캐릭터 뒤에 보일 배경을 골라요. 내 사진도 올릴 수 있어요.')}</p>
+      ${bgPicker()}
+    </div>
+    <div class="card">
+      <b>${t('백업')}</b><p class="sub" style="margin:4px 0 10px">${t('기록은 이 폰(브라우저)에만 저장돼요. 폰을 바꾸거나 인터넷 기록을 지우기 전에 백업 파일을 저장해 두세요.')}</p>
+      <div class="row"><button class="btn" style="flex:1" id="exp">📤 ${t('백업 저장')}</button><button class="btn" style="flex:1" id="imp">📥 ${t('불러오기')}</button></div>
+      <input type="file" id="file" accept=".json,application/json" class="hidden">
+    </div>
+    <div class="card">
+      <b>${t('성장 단계 미리보기')}</b><p class="sub" style="margin:4px 0 10px">${esc(t('{job}의 1~{n}단계 모습', { job: C.name, n: C.stages.length }))}</p>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px">${C.stages.map((n, i) => `
+        <div style="text-align:center"><div style="width:100%;aspect-ratio:3/4">${heroArt(D.hero.cls, i + 1)}</div><small class="sub" style="font-size:10px">${i + 1}. ${esc(n)}</small></div>`).join('')}</div>
+    </div>
+    <button class="btn danger block" id="reset">${t('처음부터 다시 시작 (전체 초기화)')}</button>
+    <p class="sub" style="text-align:center;margin-top:16px">${t('레벨업 라이프')} v${APP_V}</p>`;
+  bindLang('langSel');
+  bindBgPicker();
+  $('#saveName').onclick = () => { const n = $('#nm').value.trim(); if (!n) return; D.hero.name = n; save(); toast(t('저장했어요'), '', true); };
+  $('#cls').onclick = () => { tab = 'jobs'; render(); };
+  $('#addChar').onclick = () => editCustom();
+  document.querySelectorAll('[data-cedit]').forEach(b => b.onclick = () => editCustom(b.dataset.cedit));
+  $('#exp').onclick = () => {
+    const blob = new Blob([JSON.stringify(D, null, 1)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = `levelup-backup-${dayKey()}.json`; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  };
+  $('#imp').onclick = () => $('#file').click();
+  $('#file').onchange = async e => {
+    const f = e.target.files[0]; if (!f) return;
+    try {
+      const d = JSON.parse(await f.text());
+      if (!d.hero || !Array.isArray(d.logs) || !Array.isArray(d.acts)) throw 0;
+      confirmSheet(t('백업을 불러올까요?'), t('기록 {n}개 · 지금 데이터는 백업 내용으로 바뀌어요.', { n: d.logs.length }), t('불러오기'), () => { D = migrate(d); save(); render(); });
+    } catch (err) { toast(t('백업 파일이 아니에요'), '', true); }
+    e.target.value = '';
+  };
+  $('#reset').onclick = () => confirmSheet(t('정말 처음부터 시작할까요?'), t('캐릭터, 기록, 활동이 모두 지워져요. 되돌릴 수 없어요.'), t('전부 지우기'), () => {
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    D = null; syncCustom(null); tab = 'home'; render();
+  });
+}
+
+// ---------- 내 캐릭터 (사진으로 만들기) ----------
+const CICONS = ['🦸', '🧙', '🐉', '🦊', '🐱', '🐶', '🐰', '🐻', '🤖', '👽', '🦄', '👑', '⭐', '🔥', '🌙', '🍀', '🎮', '💎'];
+const CCOLORS = ['#f87171', '#fb923c', '#facc15', '#4ade80', '#2dd4bf', '#60a5fa', '#a78bfa', '#f472b6', '#e5e7eb'];
+const MIN_ST = 2, MAX_ST = 30;
+// 이름에 들어간 HTML 특수문자는 빼고 저장 (화면 여러 곳에 그대로 쓰이므로)
+const clean = s => s.replace(/[<>&"'`]/g, '').trim();
+
+// 사진을 긴 변 size px로 줄여서 저장 (폰 저장 공간 절약). 배경처럼 투명할 필요 없으면 opaque
+async function shrink(file, size = 320, opaque = false) {
+  const url = URL.createObjectURL(file);
+  try {
+    const im = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = url; });
+    const s = Math.min(1, size / Math.max(im.width, im.height));
+    const c = document.createElement('canvas');
+    c.width = Math.max(1, Math.round(im.width * s)); c.height = Math.max(1, Math.round(im.height * s));
+    c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+    const webp = c.toDataURL('image/webp', .82);
+    return webp.startsWith('data:image/webp') ? webp : c.toDataURL(opaque ? 'image/jpeg' : 'image/png', .85);
+  } finally { URL.revokeObjectURL(url); }
+}
+
+// ---------- 홈 배경 (캐릭터 뒤) ----------
+const BG_PRESETS = {
+  night: { name: '밤하늘', css: 'radial-gradient(circle at 20% 15%,#ffffff55 0 1px,transparent 2px),radial-gradient(circle at 70% 30%,#ffffff44 0 1px,transparent 2px),radial-gradient(circle at 40% 60%,#ffffff33 0 1px,transparent 2px),linear-gradient(#0b1033,#2a1b5c)' },
+  forest: { name: '숲', css: 'linear-gradient(#0f3d2e 0%,#1f6b45 55%,#2f4a1f 100%)' },
+  sea: { name: '바다', css: 'linear-gradient(#0b3b6e 0%,#1677a8 55%,#e6c98a 100%)' },
+  sunset: { name: '노을', css: 'linear-gradient(#3b1d5c 0%,#c2410c 60%,#fbbf24 100%)' },
+  castle: { name: '성', css: 'linear-gradient(#1e1b4b 0%,#475569 70%,#334155 100%)' },
+  candy: { name: '꽃밭', css: 'linear-gradient(#fbcfe8 0%,#c4b5fd 55%,#86efac 100%)' },
+};
+function bgStyle(bg) {
+  if (!bg) return '';
+  if (bg.type === 'img') return `background-image:url('${bg.value}')`;
+  return BG_PRESETS[bg.value] ? `background:${BG_PRESETS[bg.value].css}` : '';
+}
+function bgPicker() {
+  const cur = D.bg?.type === 'img' ? 'img' : D.bg?.value || 'none';
+  return `<div class="bgs" id="bgs">
+    <button data-bg="none" class="${cur === 'none' ? 'on' : ''}"><span>${t('기본')}</span></button>
+    ${Object.entries(BG_PRESETS).map(([k, p]) => `<button data-bg="${k}" class="${cur === k ? 'on' : ''}" style="background:${p.css}"><span>${t(p.name)}</span></button>`).join('')}
+    ${D.bg?.type === 'img' ? `<button data-bg="img" class="on" style="background-image:url('${D.bg.value}')"><span>${t('내 사진')}</span></button>` : ''}
+    <button data-bg="upload" class="up"><span>📷 ${t('사진 올리기')}</span></button>
+  </div><input type="file" id="bgFile" accept="image/*" class="hidden">`;
+}
+function bindBgPicker() {
+  document.querySelectorAll('#bgs [data-bg]').forEach(b => b.onclick = () => {
+    const v = b.dataset.bg;
+    if (v === 'upload') return $('#bgFile').click();
+    if (v === 'img') return;
+    const before = D.bg;
+    D.bg = v === 'none' ? null : { type: 'preset', value: v };
+    if (!save()) D.bg = before;
+    render();
+  });
+  $('#bgFile').onchange = async e => {
+    const f = e.target.files[0]; e.target.value = '';
+    if (!f) return;
+    try {
+      const before = D.bg;
+      D.bg = { type: 'img', value: await shrink(f, 720, true) };
+      if (!save()) { D.bg = before; return; }
+      render(); toast(t('배경을 바꿨어요'), '', true);
+    } catch (err) { toast(t('사진을 읽지 못했어요'), f.name, true); }
+  };
+}
+
+function editCustom(key) {
+  const old = D.custom.find(c => c.key === key);
+  const c = old ? { ...old, stages: [...old.stages], imgs: [...old.imgs] }
+    : { name: '', icon: CICONS[0], color: CCOLORS[5], stages: [], imgs: [] };
+  let n = old ? old.stages.length : 10;
+  openSheet(`
+    <h2>${old ? t('내 캐릭터 수정') : t('캐릭터 추가하기')}</h2>
+    <div class="field"><label>${t('캐릭터 이름')}</label><input id="cn" maxlength="10" placeholder="${esc(t('예: 우리집 고양이, 용사 지정'))}" value="${esc(c.name)}"></div>
+    <div class="field"><label>${t('아이콘')}</label><div class="emojis" id="ci">${CICONS.map(e => `<button data-e="${e}" class="${e === c.icon ? 'on' : ''}">${e}</button>`).join('')}</div></div>
+    <div class="field"><label>${t('색')}</label><div class="swatches" id="cc">${CCOLORS.map(x => `<button data-c="${x}" class="${x === c.color ? 'on' : ''}" style="background:${x}" aria-label="${esc(t('색'))} ${x}"></button>`).join('')}</div></div>
+    <div class="field"><label>${t('성장 단계 수 ({a}~{b})', { a: MIN_ST, b: MAX_ST })}</label>
+      <div class="stagepick"><input id="cnum" type="number" inputmode="numeric" min="${MIN_ST}" max="${MAX_ST}" value="${n}">
+        ${[5, 10, 15, 20].map(v => `<button data-n="${v}">${v}</button>`).join('')}</div>
+      <span class="sub" style="font-size:12px">${t('한 단계 = {p}P. 단계마다 사진을 한 장씩 올려요.', { p: STAGE_XP })}</span></div>
+    <div class="row" style="justify-content:space-between;margin-bottom:8px"><b id="cprog"></b>
+      <button class="btn" id="cmulti" style="padding:8px 12px;font-size:13px">📷 ${t('여러 장 한꺼번에')}</button></div>
+    <p class="sub" style="font-size:12px;margin:0 0 8px">${t('여러 장을 고르면 빈 칸에 순서대로 들어가요. 칸을 누르면 그 단계 사진만 바꿀 수 있어요.')}</p>
+    <div class="slots" id="slots"></div>
+    <input type="file" id="cfile" accept="image/*" class="hidden">
+    <input type="file" id="cfiles" accept="image/*" multiple class="hidden">
+    <button class="btn primary block" id="ok" style="margin-top:14px">${old ? t('저장') : t('캐릭터 만들기')}</button>
+    ${old ? `<button class="btn danger block" style="margin-top:8px" id="del">${t('이 캐릭터 지우기')}</button>` : ''}
+    <button class="btn block" style="margin-top:8px" id="cancel">${t('취소')}</button>`);
+
+  let pick = 0;  // 한 장 고를 때 넣을 칸
+  const draw = () => {
+    const done = c.imgs.slice(0, n).filter(Boolean).length;
+    $('#cprog').innerHTML = `${t('사진')} <span style="color:${done === n ? 'var(--good)' : 'var(--gold)'}">${done}</span> / ${n}`;
+    $('#slots').innerHTML = Array.from({ length: n }, (_, i) => `
+      <div class="slot">
+        <button class="pic ${c.imgs[i] ? 'has' : ''}" data-i="${i}" aria-label="${esc(stLabel(i + 1))}">
+          ${c.imgs[i] ? `<img src="${c.imgs[i]}" alt="">` : `<span>＋</span>`}<em>${i + 1}</em></button>
+        <input data-sn="${i}" maxlength="12" placeholder="${esc(t('단계 이름'))}" value="${esc(old && c.stages[i] === old.name ? '' : c.stages[i] || '')}">
+      </div>`).join('');
+    document.querySelectorAll('#slots .pic').forEach(b => b.onclick = () => { pick = +b.dataset.i; $('#cfile').click(); });
+    document.querySelectorAll('#slots [data-sn]').forEach(x => x.oninput = () => { c.stages[+x.dataset.sn] = x.value; });
+  };
+  const setN = v => {
+    n = Math.max(MIN_ST, Math.min(MAX_ST, Math.round(v) || MIN_ST));
+    $('#cnum').value = n; draw();
+  };
+  const add = async (files, start) => {
+    let i = start;
+    for (const f of files) {
+      if (start === null) { i = 0; while (i < n && c.imgs[i]) i++; }
+      if (i >= n) break;
+      try { c.imgs[i] = await shrink(f); } catch (e) { toast(t('사진을 읽지 못했어요'), f.name, true); }
+      if (start !== null) break;
+    }
+    draw();
+  };
+
+  document.querySelectorAll('#ci [data-e]').forEach(b => b.onclick = () => {
+    c.icon = b.dataset.e; document.querySelectorAll('#ci [data-e]').forEach(x => x.classList.toggle('on', x === b));
+  });
+  document.querySelectorAll('#cc [data-c]').forEach(b => b.onclick = () => {
+    c.color = b.dataset.c; document.querySelectorAll('#cc [data-c]').forEach(x => x.classList.toggle('on', x === b));
+  });
+  $('#cnum').onchange = () => setN(+$('#cnum').value);
+  document.querySelectorAll('.stagepick [data-n]').forEach(b => b.onclick = () => setN(+b.dataset.n));
+  $('#cmulti').onclick = () => $('#cfiles').click();
+  $('#cfiles').onchange = async e => { await add([...e.target.files], null); e.target.value = ''; };
+  $('#cfile').onchange = async e => { await add([...e.target.files], pick); e.target.value = ''; };
+  $('#cancel').onclick = closeSheet;
+  $('#ok').onclick = () => {
+    const name = clean($('#cn').value);
+    if (!name) return toast(t('이름을 써주세요'), '', true);
+    const miss = Array.from({ length: n }, (_, i) => i).filter(i => !c.imgs[i]);
+    if (miss.length) return toast(t('사진이 {n}장 모자라요', { n: miss.length }), t('{n}단계부터 올려 주세요', { n: miss[0] + 1 }), true);
+    const item = { key: old ? old.key : 'my_' + uid(), name, icon: c.icon, color: c.color,
+      stages: Array.from({ length: n }, (_, i) => clean(c.stages[i] || '') || name), imgs: c.imgs.slice(0, n) };
+    const before = D.custom, prevCls = D.hero.cls;
+    D.custom = old ? D.custom.map(x => x.key === old.key ? item : x) : [...D.custom, item];
+    if (!old) D.hero.cls = item.key;  // 새로 만든 캐릭터를 바로 키우기
+    if (!save()) { D.custom = before; D.hero.cls = prevCls; return; }
+    syncCustom(D); closeSheet(); tab = 'home'; render();
+    toast(old ? t('저장했어요') : t('캐릭터 완성!'), `${item.icon} ${item.name} · ${stLabel(n)}`);
+  };
+  if (old) $('#del').onclick = () => {
+    const logs = D.logs.filter(l => l.cls === old.key), xp = logs.reduce((s, l) => s + l.xp, 0);
+    confirmSheet(esc(t("'{name}' 캐릭터를 지울까요?", { name: old.name })), t('이 캐릭터로 쌓은 기록 {n}개({p}P)도 함께 지워져요. 되돌릴 수 없어요.', { n: logs.length, p: fmt(xp) }), t('지우기'), () => {
+      D.custom = D.custom.filter(x => x.key !== old.key);
+      D.logs = D.logs.filter(l => l.cls !== old.key);
+      if (D.hero.cls === old.key) D.hero.cls = 'warrior';
+      syncCustom(D); save(); render();
+    });
+  };
+  draw();
+}
+
+// ---------- 처음 시작 ----------
+function renderSetup() {
+  $('#nav').classList.add('hidden');
+  let cls = 'warrior';
+  const typed = $('#nm')?.value || '';
+  $('#app').innerHTML = `
+    <div style="display:flex;justify-content:flex-end">${langSelect('langSetup')}</div>
+    <div style="text-align:center;margin:6px 0 4px">
+      <div class="hero-stage" id="introArt" style="width:140px;height:175px"></div>
+      <h1 style="font-size:24px">${t('레벨업 라이프')}</h1>
+      <p class="sub" style="line-height:1.6"><span id="introLine"></span><br>${t('현실에서 공부하고 운동할 때마다 포인트를 모아 전설의 영웅으로 성장하세요!')} ${t('({p}P마다 1단계, 최대 {n}단계)', { p: STAGE_XP, n: MAX_STAGE })}<br>${t('직업마다 따로 성장하니 여러 직업을 골라 키울 수 있어요.')}<br>${t('사진으로 나만의 캐릭터도 만들 수 있어요.')}</p>
+    </div>
+    <div class="field"><label>${t('캐릭터 이름')}</label><input id="nm" maxlength="12" placeholder="${esc(t('이름을 입력하세요'))}" value="${esc(typed)}"></div>
+    <label class="sub">${t('먼저 키울 직업')}</label>
+    <div class="classes" id="classes"></div>
+    <button class="btn primary block" id="start">${t('모험 시작하기')}</button>`;
+  bindLang('langSetup');
+  const drawClasses = () => {
+    $('#classes').innerHTML = Object.entries(CLASSES).map(([k, c]) => `
+      <button class="cls ${k === cls ? 'on' : ''}" data-c="${k}">
+        <div class="mini">${heroArt(k, 1)}</div><span class="arrow">→</span><div class="mini">${heroArt(k, MAX_STAGE)}</div>
+        <div class="grow"><b>${c.icon} ${esc(c.name)}</b><div class="sub">${esc(c.stages[0])} → ${esc(c.stages[MAX_STAGE - 1])}</div></div>
+      </button>`).join('');
+    $('#introArt').innerHTML = heroArt(cls, 1);
+    $('#introLine').innerHTML = t('당신은 {name}입니다.', { name: `<b>${esc(CLASSES[cls].stages[0])}</b>` });
+    document.querySelectorAll('[data-c]').forEach(b => b.onclick = () => { cls = b.dataset.c; drawClasses(); });
+  };
+  drawClasses();
+  $('#start').onclick = () => {
+    const name = $('#nm').value.trim();
+    if (!name) { $('#nm').focus(); return toast(t('이름을 써주세요'), '', true); }
+    D = { v: 1, hero: { name, cls, created: Date.now() }, acts: defaultActs(), logs: [], custom: [], memos: [] };
+    save(); tab = 'home'; render();
+    toast(t('모험 시작!'), t('홈에서 오늘 한 일을 기록해 보세요'));
+  };
+}
+
+// ---------- 공통 ----------
+function openSheet(html) { $('#sheet').innerHTML = html; $('#modal').classList.add('show'); }
+function closeSheet() { $('#modal').classList.remove('show'); }
+$('#modal').onclick = e => { if (e.target.id === 'modal') closeSheet(); };
+function confirmSheet(title, body, okText, fn) {
+  openSheet(`<h2>${title}</h2><p class="sub" style="line-height:1.6">${body}</p>
+    <button class="btn danger block" id="ok">${okText}</button><button class="btn block" style="margin-top:8px" id="cancel">${t('취소')}</button>`);
+  $('#ok').onclick = () => { closeSheet(); fn(); };
+  $('#cancel').onclick = closeSheet;
+}
+function toast(big, small = '', quiet = false) {
+  $('#toast').innerHTML = `<div style="${quiet ? 'font-size:16px' : ''}">${esc(big)}${small ? `<small>${esc(small)}</small>` : ''}</div>`;
+}
+document.querySelectorAll('#nav button').forEach(b => b.onclick = () => { tab = b.dataset.tab; render(); });
+
+// 고른 언어 파일을 불러온 뒤 첫 화면을 그림
+setLang(guessLang()).then(() => { render(); probeArt(); });
+
+// 오프라인 실행 (홈 화면에 추가했을 때)
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
