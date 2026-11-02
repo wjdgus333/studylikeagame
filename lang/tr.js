@@ -198,7 +198,13 @@ ui: [
 "Etkinlikler",
 "Ders",
 "Okuma",
-"Spor"
+"Spor",
+"Cinsiyet",
+"Erkek",
+"Kadın",
+"Tüm meslek çizimleri seçilen cinsiyete göre değişir. (Kendi karakterlerin aynı kalır.)",
+"Aşamaları göster",
+"Gizle"
 ],
 jobs: [
 "Savaşçı", "Büyücü", "Okçu", "Hırsız", "Korsan", "Elf", "Dev", "Peri", "Sentor",

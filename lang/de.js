@@ -198,7 +198,13 @@ ui: [
 "Aktivitäten",
 "Lernen",
 "Lesen",
-"Sport"
+"Sport",
+"Geschlecht",
+"Männlich",
+"Weiblich",
+"Alle Klassenbilder wechseln zum gewählten Geschlecht. (Eigene Figuren bleiben gleich.)",
+"Stufen anzeigen",
+"Ausblenden"
 ],
 jobs: [
 "Krieger", "Magier", "Bogenschütze", "Schurke", "Pirat", "Elf", "Oger", "Fee", "Zentaur",

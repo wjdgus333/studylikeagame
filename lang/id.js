@@ -198,7 +198,13 @@ ui: [
 "Aktivitas",
 "Belajar",
 "Membaca",
-"Olahraga"
+"Olahraga",
+"Jenis kelamin",
+"Pria",
+"Wanita",
+"Gambar semua profesi berubah sesuai jenis kelamin yang dipilih. (Karakter buatanmu tetap.)",
+"Lihat tahap",
+"Sembunyikan"
 ],
 jobs: [
 "Prajurit", "Penyihir", "Pemanah", "Pencuri", "Bajak Laut", "Elf", "Ogre", "Peri", "Centaur",

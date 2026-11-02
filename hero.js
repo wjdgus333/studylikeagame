@@ -236,7 +236,9 @@ const AURA = { warrior: '#ff7043', mage: '#c084fc', archer: '#6ee7b7', rogue: '#
   dwarf: '#fb923c', berserker: '#f87171', vampire: '#f43f5e', werewolf: '#e0f2fe', naga: '#2dd4bf', golem: '#fde047',
   blacksmith: '#fdba74', nomad: '#fde68a', knight: '#e2e8f0', reaper: '#a78bfa' };
 
-function heroSVG(cls, stage) {
+// g: 'm' 남성 / 'f' 여성 (긴 머리·옆머리·속눈썹·입술색, 일부 직업은 옷·수염도 달라짐)
+function heroSVG(cls, stage, g = 'm') {
+  const fem = g === 'f';
   const st = Math.floor((stage - 1) / 2), up = (stage - 1) % 2 === 1;
   const wt = up ? Math.min(st + 1, 4) : st;
   // weak: 종족 직업의 1~2단계. 종족 모습(fs=1)에 허름한 옷(WEAK)
@@ -275,6 +277,11 @@ function heroSVG(cls, stage) {
   }
   // 종족: 날개·꼬리·말 몸통·뱀 꼬리 (몸 뒤쪽)
   o.push(backParts(cls, fs, p, hair, weak));
+  // 여성: 등 뒤로 내려오는 긴 머리 (해골은 흐릿한 유령 머리, 사신은 두건 밑 보라 머리, 골렘은 없음)
+  if (fem && cls !== 'golem') {
+    const fh = skull ? '#e2e8f0' : cls === 'reaper' ? '#4c1d95' : hair;
+    o.push(`<path d="M35 44 Q27 86 38 100 L82 100 Q93 86 85 44 Z" fill="${fh}"${skull ? ' opacity=".7"' : ''}/>`);
+  }
 
   // 다리 / 발
   if (!longRobe && !lower) {
@@ -326,7 +333,7 @@ function heroSVG(cls, stage) {
       o.push(`<path d="M42 72 Q50 69 54 70 L52 112 L38 112 Z M78 72 Q70 69 66 70 L68 112 L82 112 Z" fill="${p.vest}"/>`);
       if (st >= 3) o.push(`<path d="M54 70 L52 112 M66 70 L68 112" stroke="${p.trim}" stroke-width="2"/>`);
     } else {
-      o.push(bodyDecor(cls, fs, p, sk));
+      o.push(bodyDecor(cls, fs, p, sk, fem));
     }
     if (!longRobe && cls !== 'golem') {
       o.push(`<rect x="39" y="98" width="42" height="6" fill="${p.belt}"/>`);
@@ -378,20 +385,23 @@ function heroSVG(cls, stage) {
   else if (cls === 'werewolf') o.push(`<path d="M38 44 Q36 20 60 20 Q84 20 82 44 L80 34 L75 40 L72 28 L65 36 L60 26 L55 36 L48 28 L45 40 L40 34 Z" fill="${hair}"/>`);
   else if (cls === 'vampire') o.push(`<path d="M38 44 Q38 20 60 20 Q82 20 82 44 Q78 30 66 30 L60 37 L54 30 Q42 30 38 44 Z" fill="${hair}"/>`);
   else o.push(`<path d="M38 44 Q38 22 60 22 Q82 22 82 44 Q76 31 60 31 Q44 31 38 44 Z" fill="${hair}"/>`);
+  if (fem && !skull && !(R.bald && fs >= R.bald)) o.push(`<path d="M38 42 Q35 58 40 68 L44 64 Q41 54 43 44 Z M82 42 Q85 58 80 68 L76 64 Q79 54 77 44 Z" fill="${hair}"/>`);
 
   // 얼굴
   const glowEyes = cls === 'rogue' && st === 4;
+  const lip = fem ? '#d94a7a' : '#6b3b2a';
+  const lashes = fem && !skull ? `<path d="M50.3 48.6 l-2.6 -1.8 M51 47.3 l-1.6 -2.6 M69.7 48.6 l2.6 -1.8 M69 47.3 l1.6 -2.6" stroke="#2b2b2b" stroke-width="1.1" stroke-linecap="round"/>` : '';
   if (skull) {
     o.push(skullFace(glow));
     if (weak) o.push(`<path d="M44 34 l6 4 M70 56 l5 3" stroke="#78716c" stroke-width="1.2"/>`);
   } else if (beggar && up) {
-    o.push(`<circle cx="53" cy="50" r="2.6" fill="#2b2b2b"/><circle cx="67" cy="50" r="2.6" fill="#2b2b2b"/><circle cx="54" cy="49" r=".9" fill="#fff"/><circle cx="68" cy="49" r=".9" fill="#fff"/>`);
-    o.push(`<path d="M55 59 Q60 62 65 59" stroke="#6b3b2a" stroke-width="2" fill="none" stroke-linecap="round"/>`);
+    o.push(`<circle cx="53" cy="50" r="2.6" fill="#2b2b2b"/><circle cx="67" cy="50" r="2.6" fill="#2b2b2b"/><circle cx="54" cy="49" r=".9" fill="#fff"/><circle cx="68" cy="49" r=".9" fill="#fff"/>`, lashes);
+    o.push(`<path d="M55 59 Q60 62 65 59" stroke="${lip}" stroke-width="2" fill="none" stroke-linecap="round"/>`);
     o.push(`<ellipse cx="70" cy="57" rx="4" ry="2.5" fill="#7a5a3a" opacity=".45"/>`);
   } else if (beggar) {
     o.push(`<path d="M49 44 l6 2 M71 44 l-6 2" stroke="#4a2c17" stroke-width="1.8" stroke-linecap="round"/>`);
-    o.push(`<path d="M50 51 h6 M64 51 h6" stroke="#2b2b2b" stroke-width="2.6" stroke-linecap="round"/>`);
-    o.push(`<path d="M55 60 Q60 56.5 65 60" stroke="#6b3b2a" stroke-width="2" fill="none" stroke-linecap="round"/>`);
+    o.push(`<path d="M50 51 h6 M64 51 h6" stroke="#2b2b2b" stroke-width="2.6" stroke-linecap="round"/>`, lashes);
+    o.push(`<path d="M55 60 Q60 56.5 65 60" stroke="${lip}" stroke-width="2" fill="none" stroke-linecap="round"/>`);
     o.push(`<ellipse cx="70" cy="57" rx="4" ry="2.5" fill="#7a5a3a" opacity=".45"/><ellipse cx="48" cy="39" rx="3" ry="2" fill="#7a5a3a" opacity=".4"/>`);
     o.push(`<g transform="rotate(-20 70 36)"><rect x="64" y="33" width="13" height="6" rx="2" fill="#f3e2c0"/><path d="M69 35 v2 M72 35 v2" stroke="#c9b28a"/></g>`);
   } else {
@@ -399,12 +409,13 @@ function heroSVG(cls, stage) {
     if (glow) o.push(`<circle cx="53" cy="50" r="5" fill="${glow}" opacity=".3"/><circle cx="67" cy="50" r="5" fill="${glow}" opacity=".3"/>`);
     o.push(`<circle cx="53" cy="50" r="2.8" fill="${eye}"/><circle cx="67" cy="50" r="2.8" fill="${eye}"/>`);
     if (!glowEyes && !glow) o.push(`<circle cx="54" cy="49" r="1" fill="#fff"/><circle cx="68" cy="49" r="1" fill="#fff"/>`);
-    if (!R.noBlush || fs < R.noBlush) o.push(`<ellipse cx="47" cy="56" rx="3.5" ry="2" fill="#f28b82" opacity=".45"/><ellipse cx="73" cy="56" rx="3.5" ry="2" fill="#f28b82" opacity=".45"/>`);
+    if (!glow) o.push(lashes);
+    if (!R.noBlush || fs < R.noBlush) o.push(`<ellipse cx="47" cy="56" rx="3.5" ry="2" fill="#f28b82" opacity="${fem ? .6 : .45}"/><ellipse cx="73" cy="56" rx="3.5" ry="2" fill="#f28b82" opacity="${fem ? .6 : .45}"/>`);
     if (!R.noMouth) o.push(st >= 3
-      ? `<path d="M53 58 Q60 66 67 58 Z" fill="#7a2e2e"/>`
-      : weak && !up ? `<path d="M55 61 Q60 57.5 65 61" stroke="#6b3b2a" stroke-width="2" fill="none" stroke-linecap="round"/>`
-      : `<path d="M55 59 Q60 63 65 59" stroke="#6b3b2a" stroke-width="2" fill="none" stroke-linecap="round"/>`);
-    o.push(faceExtra(cls, fs, p, hair));
+      ? `<path d="M53 58 Q60 66 67 58 Z" fill="${fem ? '#b0305a' : '#7a2e2e'}"/>`
+      : weak && !up ? `<path d="M55 61 Q60 57.5 65 61" stroke="${lip}" stroke-width="2" fill="none" stroke-linecap="round"/>`
+      : `<path d="M55 59 Q60 63 65 59" stroke="${lip}" stroke-width="2" fill="none" stroke-linecap="round"/>`);
+    o.push(faceExtra(cls, fs, p, hair, fem));
   }
   // 약한 모습 1단계: 식은땀
   if (weak && !up) o.push(`<path d="M80 34 q-3 5 0 7 q3 -2 0 -7 Z" fill="#7dd3fc" stroke="#38bdf8" stroke-width=".6"/>`);
@@ -476,7 +487,7 @@ function backParts(cls, st, p, hair, weak) {
 }
 
 // 몸통 위 장식 (새 직업)
-function bodyDecor(cls, st, p, sk) {
+function bodyDecor(cls, st, p, sk, fem) {
   const o = [];
   if (cls === 'elf') {
     o.push(`<path d="M44 72 L78 104" stroke="${p.trim}" stroke-width="3"/><path d="M58 80 q4 -6 8 0 q-4 6 -8 0 Z" fill="${st >= 3 ? '#facc15' : '#4ade80'}"/>`);
@@ -502,7 +513,8 @@ function bodyDecor(cls, st, p, sk) {
     if (st <= 2) o.push(`<path d="M46 80 h28 L76 112 H44 Z" fill="${p.apron}"/>`);
     else o.push(`<path d="M44 76 h32 v22 h-32 Z" fill="${p.trim}" opacity=".25"/><path d="M44 82 h32 M44 88 h32 M44 94 h32" stroke="${p.sleeve}" stroke-width="1" stroke-dasharray="2 2"/>`);
   } else if (cls === 'berserker') {
-    o.push(`<path d="M52 82 q8 4 16 0 M54 90 q6 3 12 0" stroke="#a0643c" stroke-width="1.3" fill="none"/>`);
+    if (fem) o.push(`<path d="M43 76 Q60 72 77 76 L76 90 Q60 86 44 90 Z" fill="${p.fur}"/>`);
+    else o.push(`<path d="M52 82 q8 4 16 0 M54 90 q6 3 12 0" stroke="#a0643c" stroke-width="1.3" fill="none"/>`);
     o.push(`<path d="M40 70 Q54 72 60 92 L54 96 Q48 80 38 78 Z" fill="${p.fur}"/>`);
     if (st >= 2) o.push(`<path d="M66 80 l8 10 M70 78 l6 8" stroke="#b91c1c" stroke-width="2" stroke-linecap="round"/>`);
   } else if (cls === 'vampire') {
@@ -571,7 +583,7 @@ function skullFace(glow) {
 }
 
 // 얼굴 위 종족 특징
-function faceExtra(cls, st, p, hair) {
+function faceExtra(cls, st, p, hair, fem) {
   if (cls === 'ogre') {
     const t = [`<path d="M47 45 Q53 42 58 45 M62 45 Q67 42 73 45" stroke="#241b10" stroke-width="2.4" fill="none" stroke-linecap="round"/>`];
     if (st >= 2) t.push(`<path d="M53 61 l1.5 -${3 + st} l1.8 ${3 + st} Z M64 61 l1.5 -${3 + st} l1.8 ${3 + st} Z" fill="#fffde7" stroke="#d6d3d1" stroke-width=".5"/>`);
@@ -583,6 +595,13 @@ function faceExtra(cls, st, p, hair) {
       <ellipse cx="60" cy="58" rx="10" ry="7" fill="${p.muzzle}"/><ellipse cx="60" cy="54.5" rx="3.6" ry="2.6" fill="#1c1917"/>
       <path d="M60 57 v3 M54 61 Q57 64 60 61 Q63 64 66 61" stroke="#1c1917" stroke-width="1.5" fill="none" stroke-linecap="round"/>
       <path d="M55.5 62 l1 3 l1 -2.5 M64.5 62 l-1 3 l-1 -2.5" fill="#fff"/>`;
+  }
+  if (cls === 'dwarf' && fem) {
+    // 여성 드워프: 수염 대신 양 갈래로 길게 땋은 머리
+    const len = 76 + st * 4, ring = st >= 3 ? '#facc15' : '#a16207';
+    return `<path d="M41 52 Q35 ${len - 14} 39 ${len}" stroke="${hair}" stroke-width="6" fill="none" stroke-linecap="round"/>` +
+      `<path d="M79 52 Q85 ${len - 14} 81 ${len}" stroke="${hair}" stroke-width="6" fill="none" stroke-linecap="round"/>` +
+      `<rect x="35" y="${len - 12}" width="7" height="4" rx="1" fill="${ring}"/><rect x="78" y="${len - 12}" width="7" height="4" rx="1" fill="${ring}"/>`;
   }
   if (cls === 'dwarf') {
     const len = 4 + st * 5;

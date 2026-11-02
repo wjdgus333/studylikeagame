@@ -198,7 +198,13 @@ ui: [
 "Atividades",
 "Estudo",
 "Leitura",
-"Exercício"
+"Exercício",
+"Gênero",
+"Masculino",
+"Feminino",
+"A arte de todas as classes muda para o gênero escolhido. (Seus personagens próprios não mudam.)",
+"Ver estágios",
+"Ocultar"
 ],
 jobs: [
 "Guerreiro", "Mago", "Arqueiro", "Ladino", "Pirata", "Elfo", "Ogro", "Fada", "Centauro",

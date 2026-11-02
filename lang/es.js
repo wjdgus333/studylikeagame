@@ -198,7 +198,13 @@ ui: [
 "Actividades",
 "Estudio",
 "Lectura",
-"Ejercicio"
+"Ejercicio",
+"Género",
+"Hombre",
+"Mujer",
+"El dibujo de todos los oficios cambia al género elegido. (Tus personajes propios no cambian.)",
+"Ver etapas",
+"Ocultar"
 ],
 jobs: [
 "Guerrero", "Mago", "Arquero", "Pícaro", "Pirata", "Elfo", "Ogro", "Hada", "Centauro",

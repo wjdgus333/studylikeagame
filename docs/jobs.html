@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>직업 도감</title>
-<!-- 모든 직업의 1~10단계 그림을 한 장에 모아 보는 도감. jobs.png 는 이 페이지를 캡처한 것 -->
+<!-- 모든 직업의 1~10단계 그림을 한 장에 모아 보는 도감. jobs-male.png(남성)·jobs-female.png(여성)는 이 페이지를 캡처한 것 -->
 <style>
 body{margin:0;background:#141030;color:#f4f2ff;font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif}
 #wrap{width:1480px;padding:28px 28px 36px}
@@ -31,6 +31,9 @@ h2{margin:26px 0 10px;font-size:20px;color:#ffc94d}
 </div>
 <script src="../hero.js"></script>
 <script>
+// jobs.html#f 로 열면 여성 버전
+const g = location.hash === '#f' ? 'f' : 'm';
+document.querySelector('h1').textContent += g === 'f' ? ' (여성)' : ' (남성)';
 const keys = Object.keys(CLASSES);
 const groups = [
   ['🧑 사람 직업 · 떠돌이 거지에서 시작', keys.filter(k => HUMAN.includes(k))],
@@ -42,7 +45,7 @@ document.getElementById('list').innerHTML = groups.map(([title, ks]) => `<h2>${t
   const c = CLASSES[k];
   return `<div class="row" style="--c:${c.color}">
     <div class="job"><span class="ic">${c.icon}</span><b>${c.name}</b><small>최종: ${c.stages[9]}</small></div>
-    ${c.stages.map((s, i) => `<div class="cell ${i === 9 ? 'last' : ''}"><div class="art">${heroSVG(k, i + 1)}</div>
+    ${c.stages.map((s, i) => `<div class="cell ${i === 9 ? 'last' : ''}"><div class="art">${heroSVG(k, i + 1, g)}</div>
       <span class="n">${i + 1}단계</span><div class="nm">${s}</div></div>`).join('')}
   </div>`;
 }).join('')).join('');

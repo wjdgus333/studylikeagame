@@ -200,6 +200,9 @@ nav button.on{color:var(--gold)}
 .jcard .mbar{height:6px;background:var(--bg2);border-radius:999px;overflow:hidden;margin-top:4px}
 .jcard .mbar i{display:block;height:100%;background:var(--c)}
 .jcard .now{position:absolute;top:8px;right:8px;font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px;background:var(--c);color:#1a1530}
+.gtog{display:flex;gap:4px;margin-top:8px}
+.gtog button{flex:1;padding:4px 0;border-radius:8px;border:1px solid var(--line);background:var(--bg2);font-size:16px;cursor:pointer;opacity:.5}
+.gtog button.on{opacity:1;border-color:var(--c);background:var(--card2)}
 .jcard.add{border:2px dashed var(--line);background:none;align-items:center;justify-content:center;min-height:200px;color:var(--sub)}
 .jcard.add span{font-size:34px;color:var(--gold)}
 .jobfilter{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;padding-bottom:2px;scrollbar-width:none}
@@ -267,7 +270,7 @@ const loadScript = src => new Promise(ok => {
   document.head.appendChild(s);
 });
 // 번역 파일을 고치면 APP_V 를 올려서 옛 파일(브라우저 캐시)이 쓰이지 않게 함
-const APP_V = '1.6';
+const APP_V = '1.9';
 async function loadLang(code) {
   if (code === 'ko' || I18N[code]) return;
   if (!window.I18N_KEYS) await loadScript(`lang/keys.js?v=${APP_V}`);
@@ -310,6 +313,12 @@ function langSelect(id) {
 function bindLang(id) {
   $('#' + id).onchange = async e => { await setLang(e.target.value); render(); };
 }
+function genderSeg(g) {
+  return `<div class="seg" id="gseg"><button data-g="m" class="${g !== 'f' ? 'on' : ''}">👦 ${t('남성')}</button><button data-g="f" class="${g === 'f' ? 'on' : ''}">👧 ${t('여성')}</button></div>`;
+}
+function bindGender(fn) {
+  document.querySelectorAll('#gseg [data-g]').forEach(b => b.onclick = () => fn(b.dataset.g));
+}
 
 // 아래 메뉴 글자가 길면(독일어 등) 칸에 맞게 글자 크기를 줄임
 function fitNav() {
@@ -337,6 +346,12 @@ function syncCustom(d) {
 function migrate(d) {
   d.custom ||= [];
   d.memos ||= [];
+  d.hero.genders ||= {};
+  // v1.7 의 전체 성별 설정은 모든 기본 직업에 나눠 넣음
+  if (d.hero.gender) {
+    if (d.hero.gender === 'f') for (const k of Object.keys(CLASSES)) if (!CLASSES[k].custom) d.hero.genders[k] = 'f';
+    delete d.hero.gender;
+  }
   syncCustom(d);
   if (!CLASSES[d.hero.cls]) d.hero.cls = 'warrior';
   d.logs.forEach(l => { if (!CLASSES[l.cls]) l.cls = d.hero.cls; });
@@ -397,9 +412,10 @@ function render() {
 // 예) images/warrior-1.png ~ images/warrior-10.png
 const ART = new Set();
 let artTimer;
+// 여성 그림은 images/직업-f-단계.png (예: images/warrior-f-1.png)
 function probeArt() {
-  for (const cls of Object.keys(CLASSES).filter(k => !CLASSES[k].custom)) for (let s = 1; s <= MAX_STAGE; s++) {
-    const k = `${cls}-${s}`, im = new Image();
+  for (const cls of Object.keys(CLASSES).filter(k => !CLASSES[k].custom)) for (let s = 1; s <= MAX_STAGE; s++) for (const k of [`${cls}-${s}`, `${cls}-f-${s}`]) {
+    const im = new Image();
     im.onload = () => {
       ART.add(k); clearTimeout(artTimer);
       // 첫 화면에서 이름을 입력 중이면 다시 그리지 않음
@@ -408,11 +424,14 @@ function probeArt() {
     im.src = `images/${k}.png`;
   }
 }
-function heroArt(cls, stage) {
+// 직업마다 남성('m')·여성('f') 그림을 따로 고름 (D.hero.genders). 처음 시작 화면에서는 setupGender
+let setupGender = 'm';
+const genderOf = cls => D ? D.hero.genders?.[cls] || 'm' : setupGender;
+function heroArt(cls, stage, g = genderOf(cls)) {
   const C = CLASSES[cls];
   if (C.custom) return `<img class="hero-img" src="${C.imgs[stage - 1]}" alt="${esc(C.stages[stage - 1])}">`;
-  const k = `${cls}-${stage}`;
-  return ART.has(k) ? `<img class="hero-img" src="images/${k}.png" alt="${esc(C.stages[stage - 1])}">` : heroSVG(cls, stage);
+  const k = g === 'f' ? `${cls}-f-${stage}` : `${cls}-${stage}`;
+  return ART.has(k) ? `<img class="hero-img" src="images/${k}.png" alt="${esc(C.stages[stage - 1])}">` : heroSVG(cls, stage, g);
 }
 
 function heroBlock(cls, stage, size = '') {
@@ -542,16 +561,24 @@ function renderJobs() {
       `<button data-cat="${k}" class="${k === jobCat ? 'on' : ''}">${t(v.name)} ${count(k)}</button>`).join('')}</div>
     <div class="jgrid">${list.map(([k, c]) => {
       const xp = jobXP(k), st = stageOf(xp, k), max = maxOf(k), p = st >= max ? 100 : (xp - (st - 1) * STAGE_XP) / STAGE_XP * 100;
-      return `<button class="jcard ${k === cur ? 'on' : ''}" data-pick="${k}" style="--c:${c.color}">
+      const g = genderOf(k);
+      return `<div class="jcard ${k === cur ? 'on' : ''}" data-pick="${k}" role="button" tabindex="0" style="--c:${c.color}">
         ${k === cur ? `<span class="now">${t('키우는 중')}</span>` : ''}
         <div class="art">${heroArt(k, st)}</div>
         <b>${c.icon} ${esc(c.name)}</b>
         <small>${t('{n} / {m}단계', { n: st, m: max })} · ${esc(c.stages[st - 1])}</small>
         <small>${xp ? `${fmt(xp)}P` : t('아직 시작 전')}</small>
-        <div class="mbar"><i style="width:${p}%"></i></div></button>`; }).join('')}
+        <div class="mbar"><i style="width:${p}%"></i></div>
+        ${c.custom ? '' : `<div class="gtog"><button data-gk="${k}" data-g="m" class="${g === 'm' ? 'on' : ''}" aria-label="${esc(t('남성'))}">👦</button><button data-gk="${k}" data-g="f" class="${g === 'f' ? 'on' : ''}" aria-label="${esc(t('여성'))}">👧</button></div>`}</div>`; }).join('')}
       ${jobCat === 'all' || jobCat === 'mine' ? `<button class="jcard add" id="addChar"><span>＋</span><b>${t('캐릭터 추가하기')}</b><small>${t('사진으로 만들기')}</small></button>` : ''}</div>
     ${!list.length ? `<div class="card empty">${jobCat === 'growing' ? t('아직 키우는 직업이 없어요. 직업을 골라 기록해 보세요!') : t('아직 만든 캐릭터가 없어요.')}</div>` : ''}`;
   document.querySelectorAll('#jcat [data-cat]').forEach(b => b.onclick = () => { jobCat = b.dataset.cat; renderJobs(); });
+  // 카드 안의 👦/👧: 그 직업 그림만 남성·여성으로 바꿈 (직업 선택은 안 함)
+  document.querySelectorAll('[data-gk]').forEach(b => b.onclick = e => {
+    e.stopPropagation();
+    const y = scrollY;
+    D.hero.genders[b.dataset.gk] = b.dataset.g; save(); renderJobs(); scrollTo(0, y);
+  });
   document.querySelectorAll('[data-pick]').forEach(b => b.onclick = () => {
     const k = b.dataset.pick;
     if (k === D.hero.cls) return;
@@ -956,13 +983,21 @@ function renderSettings() {
     </div>
     <div class="card">
       <b>${t('성장 단계 미리보기')}</b><p class="sub" style="margin:4px 0 10px">${esc(t('{job}의 1~{n}단계 모습', { job: C.name, n: C.stages.length }))}</p>
-      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px">${C.stages.map((n, i) => `
-        <div style="text-align:center"><div style="width:100%;aspect-ratio:3/4">${heroArt(D.hero.cls, i + 1)}</div><small class="sub" style="font-size:10px">${i + 1}. ${esc(n)}</small></div>`).join('')}</div>
+      <!-- 앞으로의 모습은 스포일러라서 버튼을 눌러야 보임 -->
+      <button class="btn block" id="pvBtn">👀 ${t('성장 단계 보기')}</button>
+      <div id="pvGrid" class="hidden" style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:10px"></div>
     </div>
     <button class="btn danger block" id="reset">${t('처음부터 다시 시작 (전체 초기화)')}</button>
     <p class="sub" style="text-align:center;margin-top:16px">${t('레벨업 라이프')} v${APP_V}</p>`;
   bindLang('langSel');
   bindBgPicker();
+  $('#pvBtn').onclick = () => {
+    const grid = $('#pvGrid'), open = grid.classList.toggle('hidden') === false;
+    // 처음 펼칠 때만 그림을 그림
+    if (open && !grid.innerHTML) grid.innerHTML = C.stages.map((n, i) => `
+      <div style="text-align:center"><div style="width:100%;aspect-ratio:3/4">${heroArt(D.hero.cls, i + 1)}</div><small class="sub" style="font-size:10px">${i + 1}. ${esc(n)}</small></div>`).join('');
+    $('#pvBtn').textContent = open ? `🙈 ${t('숨기기')}` : `👀 ${t('성장 단계 보기')}`;
+  };
   $('#saveName').onclick = () => { const n = $('#nm').value.trim(); if (!n) return; D.hero.name = n; save(); toast(t('저장했어요'), '', true); };
   $('#cls').onclick = () => { tab = 'jobs'; render(); };
   $('#addChar').onclick = () => editCustom();
@@ -1158,10 +1193,12 @@ function renderSetup() {
       <p class="sub" style="line-height:1.6"><span id="introLine"></span><br>${t('현실에서 공부하고 운동할 때마다 포인트를 모아 전설의 영웅으로 성장하세요!')} ${t('({p}P마다 1단계, 최대 {n}단계)', { p: STAGE_XP, n: MAX_STAGE })}<br>${t('직업마다 따로 성장하니 여러 직업을 골라 키울 수 있어요.')}<br>${t('사진으로 나만의 캐릭터도 만들 수 있어요.')}</p>
     </div>
     <div class="field"><label>${t('캐릭터 이름')}</label><input id="nm" maxlength="12" placeholder="${esc(t('이름을 입력하세요'))}" value="${esc(typed)}"></div>
+    <div class="field"><label>${t('성별')}</label><div id="gbox">${genderSeg(setupGender)}</div></div>
     <label class="sub">${t('먼저 키울 직업')}</label>
     <div class="classes" id="classes"></div>
     <button class="btn primary block" id="start">${t('모험 시작하기')}</button>`;
   bindLang('langSetup');
+  const pickGender = () => bindGender(g => { setupGender = g; $('#gbox').innerHTML = genderSeg(g); pickGender(); drawClasses(); });
   const drawClasses = () => {
     $('#classes').innerHTML = Object.entries(CLASSES).map(([k, c]) => `
       <button class="cls ${k === cls ? 'on' : ''}" data-c="${k}">
@@ -1173,10 +1210,11 @@ function renderSetup() {
     document.querySelectorAll('[data-c]').forEach(b => b.onclick = () => { cls = b.dataset.c; drawClasses(); });
   };
   drawClasses();
+  pickGender();
   $('#start').onclick = () => {
     const name = $('#nm').value.trim();
     if (!name) { $('#nm').focus(); return toast(t('이름을 써주세요'), '', true); }
-    D = { v: 1, hero: { name, cls, created: Date.now() }, acts: defaultActs(), logs: [], custom: [], memos: [] };
+    D = { v: 1, hero: { name, cls, genders: { [cls]: setupGender }, created: Date.now() }, acts: defaultActs(), logs: [], custom: [], memos: [] };
     save(); tab = 'home'; render();
     toast(t('모험 시작!'), t('홈에서 오늘 한 일을 기록해 보세요'));
   };

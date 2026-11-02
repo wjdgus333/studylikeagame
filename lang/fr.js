@@ -198,7 +198,13 @@ ui: [
 "Activités",
 "Étude",
 "Lecture",
-"Sport"
+"Sport",
+"Genre",
+"Homme",
+"Femme",
+"Les dessins de tous les métiers passent au genre choisi. (Vos personnages perso ne changent pas.)",
+"Voir les niveaux",
+"Masquer"
 ],
 jobs: [
 "Guerrier", "Mage", "Archer", "Voleur", "Pirate", "Elfe", "Ogre", "Fée", "Centaure",

@@ -198,7 +198,13 @@ ui: [
 "Activities",
 "Study",
 "Reading",
-"Exercise"
+"Exercise",
+"Gender",
+"Male",
+"Female",
+"All job art changes to the chosen gender. (Your own characters stay the same.)",
+"Show stages",
+"Hide"
 ],
 jobs: [
 "Warrior", "Mage", "Archer", "Rogue", "Pirate", "Elf", "Ogre", "Fairy", "Centaur",
