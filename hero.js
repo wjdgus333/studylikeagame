@@ -50,6 +50,22 @@ const CLASSES = {
     stages: ['떠돌이 거지', '낡은 창 주운 떠돌이', '시동', '종자', '견습 기사', '중기병', '왕국 기사', '기사단 수호자', '왕의 기사', '전설의 성전 기사'] },
   reaper: { name: '사신', icon: '⚰️', color: '#7c3aed',
     stages: ['길 잃은 영혼', '낫 주운 영혼', '저승 심부름꾼', '견습 사신', '사신', '영혼 수확자', '저승의 집행자', '죽음의 그림자', '저승의 군주', '전설의 사신왕'] },
+  duke: { name: '북부대공', icon: '❄️', color: '#93c5fd',
+    stages: ['떠돌이 거지', '낡은 검 주운 떠돌이', '북부 견습 기사', '북부 기사', '설원의 기사단장', '국경의 수호자', '북부 백작', '북부 공작', '북부대공', '전설의 얼음 대공'] },
+  monk: { name: '무도가', icon: '🥋', color: '#fb7185',
+    stages: ['떠돌이 거지', '붕대 감은 떠돌이', '도장 수련생', '흰 띠 무도가', '검은 띠 무도가', '사범', '권법가', '무술 고수', '무신', '전설의 권왕'] },
+  cleric: { name: '성직자', icon: '✝️', color: '#fde68a',
+    stages: ['떠돌이 거지', '낡은 경전 주운 떠돌이', '수도원 견습생', '수도사', '사제', '치유 사제', '주교', '대주교', '성인', '전설의 대성인'] },
+  bard: { name: '음유시인', icon: '🎻', color: '#e879f9',
+    stages: ['떠돌이 거지', '낡은 피리 주운 떠돌이', '거리의 악사', '견습 음유시인', '음유시인', '궁정 악사', '이야기꾼', '명가수', '왕실 음유시인', '전설의 노래꾼'] },
+  catfolk: { name: '고양이 수인', icon: '🐱', color: '#fca5a5',
+    stages: ['길고양이 수인', '생선뼈 주운 고양이', '골목대장 고양이', '고양이 모험가', '고양이 검사', '날쌘 고양이 기사', '그림자 고양이', '은빛 고양이 영웅', '고양이 왕', '전설의 고양이 신'] },
+  angel: { name: '천사', icon: '😇', color: '#bae6fd',
+    stages: ['아기 천사', '나팔 주운 아기 천사', '견습 천사', '수호천사', '빛의 천사', '구름 위의 천사', '대천사', '치천사', '천사장', '전설의 대천사장'] },
+  demon: { name: '악마', icon: '😈', color: '#ef4444',
+    stages: ['꼬마 임프', '삼지창 주운 임프', '말썽꾸러기 악마', '하급 악마', '불꽃 악마', '악마 기사', '대악마', '지옥의 공작', '마계 군주', '전설의 마왕'] },
+  slime: { name: '슬라임', icon: '🟢', color: '#4ade80',
+    stages: ['아기 슬라임', '물방울 슬라임', '말랑 슬라임', '초록 슬라임', '큰 슬라임', '강철 슬라임', '황금 슬라임', '슬라임 기사', '슬라임 대장', '전설의 킹 슬라임'] },
 };
 
 // 직업별 단계 색상 [단계1, 단계2, 단계3, 단계4]
@@ -180,6 +196,48 @@ const PAL = {
     { tunic: '#cbd5e1', pants: '#94a3b8', sleeve: '#cbd5e1', belt: '#1e3a8a', trim: '#1d4ed8', boots: '#64748b', helm: '#e2e8f0', tabard: '#1e3a8a', cape: '#1e3a8a', armor: '#e2e8f0' },
     { tunic: '#f1f5f9', pants: '#cbd5e1', sleeve: '#f1f5f9', belt: '#facc15', trim: '#facc15', boots: '#facc15', helm: '#f8fafc', tabard: '#b91c1c', cape: '#b91c1c', armor: '#f8fafc' },
   ],
+  duke: [
+    { tunic: '#334155', pants: '#1e293b', sleeve: '#334155', belt: '#0f172a', trim: '#cbd5e1', boots: '#0f172a', fur: '#e2e8f0' },
+    { tunic: '#1e293b', pants: '#0f172a', sleeve: '#1e293b', belt: '#0f172a', trim: '#e2e8f0', boots: '#020617', fur: '#f1f5f9', cape: '#0f172a' },
+    { tunic: '#0f172a', pants: '#020617', sleeve: '#0f172a', belt: '#1e3a8a', trim: '#93c5fd', boots: '#020617', fur: '#ffffff', cape: '#111827' },
+    { tunic: '#020617', pants: '#000', sleeve: '#0b1220', belt: '#facc15', trim: '#facc15', boots: '#000', fur: '#ffffff', cape: '#0c1a3a' },
+  ],
+  monk: [
+    { tunic: '#f5f5f4', pants: '#f5f5f4', sleeve: '#f5f5f4', belt: '#f5f5f4', trim: '#d6d3d1', boots: SKIN },
+    { tunic: '#fafaf9', pants: '#fafaf9', sleeve: '#fafaf9', belt: '#1c1917', trim: '#a8a29e', boots: SKIN },
+    { tunic: '#1c1917', pants: '#1c1917', sleeve: '#1c1917', belt: '#b91c1c', trim: '#fca5a5', boots: SKIN, cape: '#7f1d1d' },
+    { tunic: '#7c2d12', pants: '#431407', sleeve: '#7c2d12', belt: '#facc15', trim: '#facc15', boots: SKIN, cape: '#b45309' },
+  ],
+  cleric: [
+    { tunic: '#a8a29e', sleeve: '#a8a29e', trim: '#78716c', boots: '#57534e', hood: '#78716c' },
+    { tunic: '#f5f5f4', sleeve: '#f5f5f4', trim: '#a16207', boots: '#78716c' },
+    { tunic: '#ffffff', sleeve: '#ffffff', trim: '#ca8a04', boots: '#a16207', cape: '#7f1d1d', hat: '#ffffff' },
+    { tunic: '#fffbeb', sleeve: '#fffbeb', trim: '#facc15', boots: '#facc15', cape: '#b91c1c', hat: '#facc15' },
+  ],
+  bard: [
+    { tunic: '#16a34a', pants: '#78350f', sleeve: '#fde68a', belt: '#78350f', trim: '#fde68a', boots: '#78350f', hat: '#15803d', vest: '#166534' },
+    { tunic: '#2563eb', pants: '#1e3a8a', sleeve: '#fef3c7', belt: '#78350f', trim: '#fbbf24', boots: '#451a03', hat: '#1d4ed8', vest: '#1e40af', cape: '#7c3aed' },
+    { tunic: '#9333ea', pants: '#3b0764', sleeve: '#fdf4ff', belt: '#facc15', trim: '#facc15', boots: '#3b0764', hat: '#7e22ce', vest: '#6b21a8', cape: '#be185d' },
+    { tunic: '#be185d', pants: '#500724', sleeve: '#fff1f2', belt: '#facc15', trim: '#facc15', boots: '#facc15', hat: '#9d174d', vest: '#831843', cape: '#4c1d95' },
+  ],
+  catfolk: [
+    { tunic: '#a16207', pants: '#57534e', sleeve: '#a16207', belt: '#451a03', trim: '#fde68a', boots: '#451a03' },
+    { tunic: '#0f766e', pants: '#44403c', sleeve: '#0f766e', belt: '#292524', trim: '#fcd34d', boots: '#78350f', cape: '#7f1d1d' },
+    { tunic: '#1f2937', pants: '#111827', sleeve: '#1f2937', belt: '#b91c1c', trim: '#facc15', boots: '#78350f', cape: '#991b1b' },
+    { tunic: '#1e3a8a', pants: '#0f172a', sleeve: '#1e3a8a', belt: '#facc15', trim: '#facc15', boots: '#a16207', cape: '#b91c1c' },
+  ],
+  angel: [
+    { tunic: '#f8fafc', sleeve: '#f8fafc', trim: '#bae6fd', boots: '#e2e8f0', wing: '#ffffff' },
+    { tunic: '#ffffff', sleeve: '#ffffff', trim: '#fde68a', boots: '#fde68a', wing: '#ffffff', cape: '#bae6fd' },
+    { tunic: '#ffffff', sleeve: '#f0f9ff', trim: '#facc15', boots: '#facc15', wing: '#ffffff', cape: '#93c5fd' },
+    { tunic: '#fffbeb', sleeve: '#fffbeb', trim: '#facc15', boots: '#facc15', wing: '#fffbeb', cape: '#fde68a' },
+  ],
+  demon: [
+    { tunic: '#3f3f46', pants: '#27272a', sleeve: '#3f3f46', belt: '#18181b', trim: '#ef4444', boots: '#18181b' },
+    { tunic: '#1c1917', pants: '#0c0a09', sleeve: '#292524', belt: '#450a0a', trim: '#f97316', boots: '#0c0a09', cape: '#450a0a' },
+    { tunic: '#0c0a09', pants: '#000', sleeve: '#1c1917', belt: '#7f1d1d', trim: '#facc15', boots: '#000', cape: '#7f1d1d', armor: '#27272a' },
+    { tunic: '#000', pants: '#000', sleeve: '#0c0a09', belt: '#facc15', trim: '#facc15', boots: '#facc15', cape: '#4c0519', armor: '#18181b' },
+  ],
   reaper: [
     { tunic: '#292524', sleeve: '#292524', trim: '#57534e', boots: '#1c1917', hood: '#292524' },
     { tunic: '#1c1917', sleeve: '#1c1917', trim: '#6b21a8', boots: '#0c0a09', hood: '#1c1917', cape: '#0c0a09' },
@@ -205,10 +263,14 @@ const RACE = {
   naga: { skin: ['#e7d0ae', '#b8d8c0', '#9fd3c0', '#8ee0cb'], hair: ['#134e4a', '#115e59', '#0f766e', '#1f2937'], ears: 'fin', glow: [3, '#fde047'], lower: 'snake', longHair: 1 },
   golem: { skin: ['#c9b9a6', '#a8a29e', '#94a3b8', '#bae6fd'], glow: [2, '#7dd3fc'], noBlush: 1, bald: 1 },
   nomad: { hair: ['#1c1917'], lower: 'mount' },
+  duke: { hair: ['#111', '#111', '#0b1220', '#e2e8f0'], glow: [4, '#93c5fd'] },
+  catfolk: { hair: ['#f59e0b', '#ea580c', '#e2e8f0', '#f8fafc'], ears: 'cat' },
+  angel: { hair: ['#fde68a', '#fcd34d', '#fef3c7', '#fffbeb'] },
+  demon: { skin: ['#f87171', '#ef4444', '#b91c1c', '#7f1d1d'], hair: ['#1c1917', '#1c1917', '#0c0a09', '#e2e8f0'], ears: 'point', glow: [2, '#facc15'], noBlush: 2 },
   reaper: { skin: ['#1c1917', '#0c0a09', '#000', '#000'], glow: [1, '#a78bfa'], noBlush: 1, bald: 1, noMouth: 1, lower: 'float', hands: BONE },
 };
 // 사람 직업: 1~2단계가 떠돌이 거지. 나머지(종족 직업)는 WEAK 옷차림의 약한 종족 모습
-const HUMAN = ['warrior', 'mage', 'archer', 'rogue', 'pirate', 'berserker', 'blacksmith', 'nomad', 'knight'];
+const HUMAN = ['warrior', 'mage', 'archer', 'rogue', 'pirate', 'berserker', 'blacksmith', 'nomad', 'knight', 'duke', 'monk', 'cleric', 'bard'];
 const WEAK = {
   elf: { tunic: '#a3b18a', pants: '#6b705c', sleeve: '#a3b18a', belt: '#6b4f2a', trim: '#ccd5ae', boots: '#7f5539' },
   ogre: { tunic: '#8d6e63', pants: '#6d4c41', sleeve: '#d4b98e', belt: '#4e342e', trim: '#a1887f', boots: '#d4b98e' },
@@ -223,22 +285,29 @@ const WEAK = {
   naga: { tunic: '#5b8a72', sleeve: '#5b8a72', belt: '#365f4c', trim: '#a7d7c5', scale: '#7aa892', belly: '#e7d9a8', fin: '#6ee7b7', hood: '#5b8a72' },
   golem: { tunic: '#b08968', pants: '#9c6644', sleeve: '#c9b9a6', belt: '#7f5539', trim: '#ddb892', boots: '#9c6644' },
   reaper: { tunic: '#57534e', sleeve: '#57534e', trim: '#78716c', boots: '#44403c', hood: '#57534e' },
+  catfolk: { tunic: '#a8a29e', pants: '#78716c', sleeve: '#a8a29e', belt: '#57534e', trim: '#d6d3d1', boots: '#d6a35c' },
+  angel: { tunic: '#e2e8f0', sleeve: '#e2e8f0', trim: '#cbd5e1', boots: '#cbd5e1', wing: '#f1f5f9' },
+  demon: { tunic: '#57534e', pants: '#44403c', sleeve: '#57534e', belt: '#292524', trim: '#a8a29e', boots: '#292524' },
 };
-const ROBES = ['mage', 'lich', 'dryad', 'fairy', 'reaper'];
+const ROBES = ['mage', 'lich', 'dryad', 'fairy', 'reaper', 'cleric', 'angel'];
 const CAPE_FROM = { vampire: 1 };
 // 10단계 모습: angel(흰 날개) / bat(박쥐 날개) / rays(빛 기둥)
 const WINGS10 = { lich: 'bat', skeleton: 'bat', vampire: 'bat', ogre: 'rays', fairy: 'rays', centaur: 'rays', dryad: 'rays',
-  dwarf: 'rays', berserker: 'rays', werewolf: 'rays', naga: 'rays', golem: 'rays', blacksmith: 'rays', nomad: 'rays', reaper: 'bat' };
+  dwarf: 'rays', berserker: 'rays', werewolf: 'rays', naga: 'rays', golem: 'rays', blacksmith: 'rays', nomad: 'rays', reaper: 'bat',
+  duke: 'snow', monk: 'rays', bard: 'rays', catfolk: 'rays', demon: 'bat' };
 
 const BEGGAR = { tunic: '#8a6d4b', pants: '#6b5138', sleeve: '#8a6d4b' };
 const AURA = { warrior: '#ff7043', mage: '#c084fc', archer: '#6ee7b7', rogue: '#a78bfa', pirate: '#60a5fa',
   elf: '#bbf7d0', ogre: '#a3e635', fairy: '#f9a8d4', centaur: '#fcd34d', lich: '#5eead4', skeleton: '#7dd3fc', dryad: '#d9f99d',
   dwarf: '#fb923c', berserker: '#f87171', vampire: '#f43f5e', werewolf: '#e0f2fe', naga: '#2dd4bf', golem: '#fde047',
-  blacksmith: '#fdba74', nomad: '#fde68a', knight: '#e2e8f0', reaper: '#a78bfa' };
+  blacksmith: '#fdba74', nomad: '#fde68a', knight: '#e2e8f0', reaper: '#a78bfa',
+  duke: '#bfdbfe', monk: '#fb923c', cleric: '#fef9c3', bard: '#f5d0fe', catfolk: '#fecaca', slime: '#86efac',
+  angel: '#fef9c3', demon: '#f87171' };
 
 // g: 'm' 남성 / 'f' 여성 (긴 머리·옆머리·속눈썹·입술색, 일부 직업은 옷·수염도 달라짐)
 function heroSVG(cls, stage, g = 'm') {
   const fem = g === 'f';
+  if (cls === 'slime') return slimeSVG(stage, fem);  // 슬라임은 사람 몸이 아니라 따로 그림
   const st = Math.floor((stage - 1) / 2), up = (stage - 1) % 2 === 1;
   const wt = up ? Math.min(st + 1, 4) : st;
   // weak: 종족 직업의 1~2단계. 종족 모습(fs=1)에 허름한 옷(WEAK)
@@ -361,6 +430,11 @@ function heroSVG(cls, stage, g = 'm') {
   const hand = fs && R.hands ? R.hands : sk;
   o.push(`<circle cx="36.5" cy="104" r="${hr}" fill="${hand}"/><circle cx="83.5" cy="104" r="${hr}" fill="${hand}"/>`);
   if (cls === 'werewolf' && wt >= 1) o.push(claws(wt));
+  // 무도가: 주먹에 감은 붕대 (단계마다 색이 바뀜)
+  if (cls === 'monk' && wt >= 1) {
+    const c = ['#f5f5f4', '#f5f5f4', '#dc2626', '#facc15'][wt - 1];
+    o.push(`<path d="M31.5 101 h10 M31.5 104.5 h10 M31.5 108 h10 M78.5 101 h10 M78.5 104.5 h10 M78.5 108 h10" stroke="${c}" stroke-width="2.2" stroke-linecap="round"/>`);
+  }
 
   // 머리 뒤 (긴 머리, 코브라 후드, 높은 깃)
   if (fs && R.longHair && fs >= R.longHair) o.push(`<path d="M37 44 Q33 76 43 82 L77 82 Q87 76 83 44 Z" fill="${hair}"/>`);
@@ -373,6 +447,8 @@ function heroSVG(cls, stage, g = 'm') {
     if (fs && R.ears === 'point') {
       const e = cls === 'elf' ? (weak ? 2 : 6) : 0;
       o.push(`<path d="M41 42 L${24 - e} ${32 - e} L40 56 Z M79 42 L${96 + e} ${32 - e} L80 56 Z" fill="${sk}"/>`);
+    } else if (fs && R.ears === 'cat') {
+      // 고양이 귀는 머리 위에 (headTop)
     } else if (fs && R.ears === 'fin') {
       o.push(`<path d="M40 40 L24 34 L30 46 L24 56 L40 54 Z M80 40 L96 34 L90 46 L96 56 L80 54 Z" fill="${p.fin}"/>`);
     } else {
@@ -427,6 +503,12 @@ function heroSVG(cls, stage, g = 'm') {
 }
 
 function wings10(kind) {
+  if (kind === 'snow') {
+    // 눈송이 (북부대공)
+    const flake = (x, y, s) => `<g transform="translate(${x} ${y}) scale(${s})" stroke="#e0f2fe" stroke-width="1.6" stroke-linecap="round"><path d="M0 -6 V6 M-5.2 -3 L5.2 3 M-5.2 3 L5.2 -3"/></g>`;
+    return [[12, 20, 1.2], [104, 14, 1], [18, 70, .8], [108, 60, 1.3], [10, 118, 1], [110, 112, .9], [60, -8, .9], [34, 4, .7], [88, 0, .8]]
+      .map(([x, y, s]) => flake(x, y, s)).join('') + `<circle cx="60" cy="70" r="58" fill="#bfdbfe" opacity=".18"/>`;
+  }
   if (kind === 'bat') {
     const w = `<path d="M44 80 Q22 44 4 30 L12 48 L2 54 L14 62 L6 72 L22 74 Q30 86 44 88 Z" fill="#2a0a1f" stroke="#9f1239" stroke-width="1.5"/>`;
     return w + `<g transform="translate(120 0) scale(-1 1)">${w}</g>`;
@@ -462,6 +544,22 @@ function backParts(cls, st, p, hair, weak) {
     if (p.barding) o.push(`<path d="M58 98 Q78 92 100 100 L98 118 Q78 124 60 118 Z" fill="${p.barding}" stroke="${p.trim}" stroke-width="2"/>`);
     for (const x of [47, 59]) o.push(`<rect x="${x}" y="112" width="8" height="26" rx="3" fill="${p.coat}"/><rect x="${x - 1}" y="133" width="10" height="5" rx="2" fill="${st >= 4 ? '#facc15' : '#292524'}"/>`);
     return o.join('');
+  }
+  if (cls === 'catfolk') {
+    return `<path d="M76 110 Q104 114 102 92 Q100 74 110 70" stroke="${hair}" stroke-width="${weak ? 5 : 6}" fill="none" stroke-linecap="round"/>` +
+      (st >= 3 ? `<path d="M106 72 Q109 69 111 70" stroke="#fff" stroke-width="6" stroke-linecap="round"/>` : '');
+  }
+  if (cls === 'angel') {
+    // 깃털 날개: 단계마다 커짐
+    const s = weak ? .7 : .8 + st * .15, c = p.wing;
+    const wing = `<path d="M44 82 Q${44 - 30 * s} ${78 - 28 * s} ${44 - 36 * s} ${70 - 44 * s} Q${44 - 22 * s} ${66 - 20 * s} ${44 - 18 * s} ${72 - 22 * s} Q${44 - 26 * s} ${80 - 8 * s} ${44 - 10 * s} ${82} Z" fill="${c}" stroke="#bae6fd" stroke-width="1.2"/>`;
+    return wing + `<g transform="translate(120 0) scale(-1 1)">${wing}</g>`;
+  }
+  if (cls === 'demon') {
+    const s = weak ? .55 : .7 + st * .15, c = st >= 3 ? '#450a0a' : '#7f1d1d';
+    const wing = `<path d="M44 80 Q${44 - 22 * s} ${76 - 40 * s} ${44 - 34 * s} ${70 - 40 * s} L${44 - 30 * s} ${78 - 22 * s} L${44 - 38 * s} ${80 - 14 * s} L${44 - 26 * s} ${84 - 6 * s} L${44 - 30 * s} ${90} Q${44 - 14 * s} 86 44 90 Z" fill="${c}" stroke="#b91c1c" stroke-width="1"/>`;
+    return wing + `<g transform="translate(120 0) scale(-1 1)">${wing}</g>` +
+      `<path d="M74 110 Q100 118 100 98 Q99 88 106 84" stroke="${st >= 3 ? '#7f1d1d' : '#b91c1c'}" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M103 80 L112 84 L104 90 Z" fill="${st >= 3 ? '#7f1d1d' : '#b91c1c'}"/>`;
   }
   if (cls === 'nomad') {
     // 오른쪽을 보는 말 (꼬리·뒷다리 → 몸통 → 안장 → 앞다리 → 목·머리)
@@ -540,6 +638,32 @@ function bodyDecor(cls, st, p, sk, fem) {
       else o.push(`<path d="M42 76 h36 M42 82 h36 M42 88 h36 M42 94 h36" stroke="#6b7280" stroke-width="1" stroke-dasharray="1.5 1.5"/>`);
       o.push(`<path d="M50 80 h20 L68 112 H52 Z" fill="${p.tabard}" opacity=".95"/><path d="M60 84 v18 M54 90 h12" stroke="${p.trim}" stroke-width="3"/>`);
     }
+  } else if (cls === 'duke') {
+    // 두 줄 단추 군복 코트, 3단계부터 금줄 장식
+    o.push(`<path d="M60 72 V112" stroke="#000" stroke-width="1" opacity=".4"/>`);
+    o.push([80, 88, 96].map(y => `<circle cx="54" cy="${y}" r="1.6" fill="${p.trim}"/><circle cx="66" cy="${y}" r="1.6" fill="${p.trim}"/>`).join(''));
+    if (st >= 3) o.push(`<path d="M44 76 Q52 86 46 94" stroke="${p.trim}" stroke-width="1.8" fill="none"/>`);
+  } else if (cls === 'monk') {
+    // 도복 깃 (V자)
+    o.push(`<path d="M50 72 L60 92 L70 72" stroke="${st >= 3 ? p.trim : '#d6d3d1'}" stroke-width="3" fill="none"/>`);
+    if (fem) o.push(`<path d="M52 74 L60 90 L68 74 Z" fill="${p.tunic}"/>`);
+  } else if (cls === 'cleric') {
+    // 영대(긴 띠)와 가슴의 십자
+    o.push(`<path d="M50 72 L46 130 M70 72 L74 130" stroke="${p.trim}" stroke-width="4"/>`);
+    o.push(`<path d="M60 78 v14 M54 83 h12" stroke="${p.trim}" stroke-width="2.8"/>`);
+  } else if (cls === 'bard') {
+    o.push(`<path d="M42 72 Q50 69 54 70 L52 112 L38 112 Z M78 72 Q70 69 66 70 L68 112 L82 112 Z" fill="${p.vest}"/>`);
+    o.push(`<path d="M54 72 Q60 80 66 72 Q63 78 60 79 Q57 78 54 72 Z" fill="#fff"/>`);
+    if (st >= 2) o.push(`<path d="M44 80 L76 104" stroke="${p.trim}" stroke-width="3"/>`);
+  } else if (cls === 'catfolk') {
+    // 방울 목걸이
+    o.push(`<path d="M50 72 Q60 78 70 72" stroke="#dc2626" stroke-width="3" fill="none"/><circle cx="60" cy="78" r="3.2" fill="#facc15" stroke="#a16207" stroke-width=".8"/>`);
+  } else if (cls === 'angel') {
+    o.push(`<path d="M46 72 Q60 80 74 72" stroke="${p.trim}" stroke-width="2.5" fill="none"/>`);
+    if (st >= 3) o.push(`<circle cx="60" cy="86" r="3.5" fill="${p.trim}"/><circle cx="60" cy="86" r="7" fill="${p.trim}" opacity=".25"/>`);
+  } else if (cls === 'demon') {
+    if (st >= 3) o.push(`<path d="M46 74 Q60 70 74 74 L72 96 Q60 101 48 96 Z" fill="${p.armor}" stroke="${p.trim}" stroke-width="1.2"/><path d="M54 80 l6 8 l6 -8" stroke="${p.trim}" stroke-width="2" fill="none"/>`);
+    else o.push(`<path d="M44 76 L76 102" stroke="${p.trim}" stroke-width="2.5"/>`);
   } else if (cls === 'reaper') {
     o.push(`<path d="M32 134 l5 6 l5 -6 l5 7 l5 -7 l5 6 l5 -6 l5 7 l5 -7 l5 6 l5 -6 l5 6 l4 -6 Z" fill="${p.tunic}"/>`);
     o.push(`<path d="M42 98 Q60 104 78 98" stroke="${p.trim}" stroke-width="2" fill="none"/>`);
@@ -561,6 +685,11 @@ function shoulders(cls, st, p) {
   if (cls === 'golem' && st >= 2) return `<path d="M26 78 L30 66 L44 68 L44 80 Z M94 78 L90 66 L76 68 L76 80 Z" fill="${p.sleeve}" stroke="#44403c" stroke-width="1"/>`;
   if (cls === 'naga' && st >= 3) return `<path d="M29 78 Q32 68 42 70 L42 78 Z M91 78 Q88 68 78 70 L78 78 Z" fill="${p.trim}"/>`;
   if (cls === 'knight' && st >= 2) return `<path d="M27 82 Q28 66 44 70 L42 82 Z M93 82 Q92 66 76 70 L78 82 Z" fill="${p.helm}" stroke="${p.trim}" stroke-width="1.5"/>`;
+  // 북부대공: 어깨를 덮는 흰 털 망토 깃
+  if (cls === 'duke') return `<path d="M26 82 Q24 66 44 66 Q60 72 76 66 Q96 66 94 82 Q86 76 78 78 Q60 84 42 78 Q34 76 26 82 Z" fill="${p.fur}"/>` +
+    `<path d="M30 76 q3 3 6 0 M40 74 q3 3 6 0 M74 74 q3 3 6 0 M84 76 q3 3 6 0" stroke="#cbd5e1" stroke-width="1" fill="none"/>`;
+  if (cls === 'bard' && st >= 2) return `<ellipse cx="36.5" cy="76" rx="8" ry="6" fill="${p.sleeve}" stroke="${p.trim}"/><ellipse cx="83.5" cy="76" rx="8" ry="6" fill="${p.sleeve}" stroke="${p.trim}"/>`;
+  if (cls === 'demon' && st >= 3) return `<path d="M28 80 Q30 66 44 70 L42 80 Z M92 80 Q90 66 76 70 L78 80 Z" fill="${p.armor}" stroke="${p.trim}"/><path d="M31 70 l-3 -9 l7 5 Z M89 70 l3 -9 l-7 5 Z" fill="#e7e5e4"/>`;
   if (cls === 'nomad' && st >= 3) return `<path d="M30 76 Q36 68 44 72 L42 78 Z M90 76 Q84 68 76 72 L78 78 Z" fill="#a16207"/>`;
   return '';
 }
@@ -584,6 +713,9 @@ function skullFace(glow) {
 
 // 얼굴 위 종족 특징
 function faceExtra(cls, st, p, hair, fem) {
+  if (cls === 'catfolk') return `<path d="M58.2 54.5 h3.6 l-1.8 2.2 Z" fill="#f472b6"/>` +
+    `<path d="M40 55 l10 1 M40 59 l10 -1 M80 55 l-10 1 M80 59 l-10 -1" stroke="#57534e" stroke-width=".9" stroke-linecap="round"/>`;
+  if (cls === 'demon') return `<path d="M56.5 59.5 l1.2 ${2.5 + st * .5} l1.2 -${2.5 + st * .5} Z M61.1 59.5 l1.2 ${2.5 + st * .5} l1.2 -${2.5 + st * .5} Z" fill="#fff"/>`;
   if (cls === 'ogre') {
     const t = [`<path d="M47 45 Q53 42 58 45 M62 45 Q67 42 73 45" stroke="#241b10" stroke-width="2.4" fill="none" stroke-linecap="round"/>`];
     if (st >= 2) t.push(`<path d="M53 61 l1.5 -${3 + st} l1.8 ${3 + st} Z M64 61 l1.5 -${3 + st} l1.8 ${3 + st} Z" fill="#fffde7" stroke="#d6d3d1" stroke-width=".5"/>`);
@@ -635,6 +767,21 @@ function headTop(cls, st, p, hair, sk) {
   }
   if (cls === 'golem' && st >= 2) {
     return `<path d="M40 36 L46 22 L54 28 L60 18 L66 28 L74 22 L80 36 Q60 30 40 36 Z" fill="${sk}" stroke="#57534e" stroke-width="1"/>`;
+  }
+  if (cls === 'catfolk') {
+    const e = 2 + st * 1.5;
+    return `<path d="M40 34 L${42 - e} ${10 - e} L56 26 Z M80 34 L${78 + e} ${10 - e} L64 26 Z" fill="${hair}"/>` +
+      `<path d="M43 30 L${43 - e / 2} ${16 - e / 2} L52 27 Z M77 30 L${77 + e / 2} ${16 - e / 2} L68 27 Z" fill="#fda4af"/>`;
+  }
+  if (cls === 'angel') {
+    // 머리 위 빛의 고리
+    const r = 13 + st * 1.5;
+    return `<ellipse cx="60" cy="14" rx="${r}" ry="${3.5 + st * .3}" fill="none" stroke="#fde047" stroke-width="${2.2 + st * .4}"/>` +
+      (st >= 3 ? `<ellipse cx="60" cy="14" rx="${r + 4}" ry="${6 + st * .3}" fill="none" stroke="#fef9c3" stroke-width="4" opacity=".4"/>` : '');
+  }
+  if (cls === 'demon') {
+    const h = 6 + st * 4, c = st >= 4 ? '#1c1917' : '#3f3f46';
+    return `<path d="M44 30 Q36 ${24 - h} 46 ${18 - h} Q44 ${26 - h / 2} 52 26 Z M76 30 Q84 ${24 - h} 74 ${18 - h} Q76 ${26 - h / 2} 68 26 Z" fill="${c}" stroke="#78716c" stroke-width=".8"/>`;
   }
   if (cls === 'reaper') {
     // 얼굴을 가리는 깊은 두건 (어둠 속에 눈만 빛남)
@@ -804,6 +951,61 @@ function weapon(cls, st, p) {
     s.push(`<line x1="80" y1="138" x2="94" y2="${top}" stroke="${st >= 3 ? '#a8a29e' : '#78716c'}" stroke-width="3.5" stroke-linecap="round"/>`);
     s.push(`<path d="M94 ${top} Q${94 + w} ${top - 8} ${94 + w * 1.5} ${top + 12} Q${94 + w * .8} ${top + 2} 94 ${top + 6} Z" fill="${c}" stroke="#57534e" stroke-width=".7"/>`);
     if (st >= 3) s.push(`<path d="M94 ${top} Q${94 + w} ${top - 8} ${94 + w * 1.5} ${top + 12}" stroke="#a78bfa" stroke-width="5" opacity=".35" fill="none"/>`);
+  } else if (cls === 'duke') {
+    // 얼음빛 장검
+    const len = [36, 44, 50, 56][st - 1], blade = ['#cbd5e1', '#e2e8f0', '#bfdbfe', '#e0f2fe'][st - 1];
+    if (st >= 3) s.push(`<rect x="79" y="${98 - len}" width="10" height="${len}" rx="4" fill="#93c5fd" opacity="${st === 4 ? .45 : .25}"/>`);
+    s.push(`<rect x="82" y="${100 - len}" width="4" height="${len}" fill="${blade}" stroke="#64748b" stroke-width=".6"/><path d="M82 ${100 - len} L84 ${93 - len} L86 ${100 - len} Z" fill="${blade}"/>`);
+    s.push(`<path d="M75 101 Q84 96 93 101" stroke="${st >= 4 ? '#facc15' : '#94a3b8'}" stroke-width="3.5" fill="none"/><rect x="82" y="102" width="4" height="10" fill="#0f172a"/><circle cx="84" cy="113" r="2.4" fill="${st >= 3 ? '#93c5fd' : '#94a3b8'}"/>`);
+  } else if (cls === 'monk') {
+    // 맨손: 3단계부터 주먹에 기(氣)가 모임
+    if (st >= 3) {
+      const c = st === 4 ? '#fde047' : '#fb923c';
+      s.push(`<circle cx="36.5" cy="104" r="${10 + st}" fill="${c}" opacity=".35"/><circle cx="83.5" cy="104" r="${10 + st}" fill="${c}" opacity=".35"/>`);
+    }
+  } else if (cls === 'cleric') {
+    if (st === 1) s.push(`<rect x="24" y="94" width="14" height="18" rx="1.5" fill="#78350f" stroke="#fde68a"/><path d="M31 98 v10 M27.5 101.5 h7" stroke="#fde68a" stroke-width="1.5"/>`);
+    else {
+      const top = 52 - st * 4, c = st >= 3 ? '#facc15' : '#d6d3d1';
+      s.push(`<line x1="83" y1="134" x2="88" y2="${top + 8}" stroke="${st >= 3 ? '#a16207' : '#78350f'}" stroke-width="3.5" stroke-linecap="round"/>`);
+      if (st >= 3) s.push(`<circle cx="88" cy="${top}" r="${8 + st}" fill="#fef08a" opacity=".35"/><circle cx="88" cy="${top}" r="6" fill="none" stroke="${c}" stroke-width="2.5"/>`);
+      s.push(`<path d="M88 ${top - 9} v18 M82 ${top - 3} h12" stroke="${c}" stroke-width="3" stroke-linecap="round"/>`);
+    }
+  } else if (cls === 'bard') {
+    if (st === 1) s.push(`<line x1="80" y1="104" x2="98" y2="84" stroke="#d6a35c" stroke-width="3.5" stroke-linecap="round"/><circle cx="86" cy="97.5" r=".9" fill="#451a03"/><circle cx="90" cy="93" r=".9" fill="#451a03"/><circle cx="94" cy="88.5" r=".9" fill="#451a03"/>`);
+    else {
+      // 류트 (왼손) + 떠다니는 음표
+      const wood = st === 4 ? '#facc15' : st === 3 ? '#9a3412' : '#b45309';
+      s.push(`<line x1="44" y1="96" x2="68" y2="72" stroke="#451a03" stroke-width="3.5" stroke-linecap="round"/>`);
+      s.push(`<ellipse cx="38" cy="104" rx="11" ry="13" transform="rotate(-40 38 104)" fill="${wood}" stroke="#451a03" stroke-width="1"/><circle cx="40" cy="102" r="3.2" fill="#292524"/>`);
+      s.push(`<path d="M34 108 L66 74" stroke="#fef3c7" stroke-width=".6"/>`);
+      const note = (x, y) => `<ellipse cx="${x}" cy="${y}" rx="3" ry="2.2" fill="${st >= 3 ? '#fde047' : '#f5d0fe'}" transform="rotate(-20 ${x} ${y})"/><path d="M${x + 2.6} ${y - 1} v-9 l5 2" stroke="${st >= 3 ? '#fde047' : '#f5d0fe'}" stroke-width="1.3" fill="none"/>`;
+      s.push(note(96, 58), st >= 3 ? note(20, 50) : '', st === 4 ? note(104, 30) : '');
+    }
+  } else if (cls === 'catfolk') {
+    if (st === 1) s.push(`<path d="M84 104 L98 82" stroke="#e5e7eb" stroke-width="2"/><path d="M88 98 l4 3 M91 93 l4 3 M94 88 l4 3 M86 96 l-3 -2 M89 91 l-3 -2" stroke="#e5e7eb" stroke-width="1.4"/><path d="M96 84 l5 -6 l2 6 Z" fill="#e5e7eb"/>`);
+    else {
+      const blade = st === 4 ? '#fde68a' : st >= 3 ? '#e5e7eb' : '#cbd5e1';
+      const knife = x => `<path d="M${x - 2.5} 100 L${x} ${st >= 3 ? 74 : 80} L${x + 2.5} 100 Z" fill="${blade}" stroke="#64748b" stroke-width=".6"/><rect x="${x - 5}" y="99" width="10" height="3" fill="${st >= 3 ? '#b91c1c' : '#57534e'}"/>`;
+      s.push(knife(83.5));
+      if (st >= 3) s.push(knife(36.5));
+      if (st === 4) s.push(`<circle cx="83.5" cy="88" r="11" fill="#fde68a" opacity=".3"/><circle cx="36.5" cy="88" r="11" fill="#fde68a" opacity=".3"/>`);
+    }
+  } else if (cls === 'angel') {
+    if (st === 1) s.push(`<path d="M82 104 L96 90 L100 84 Q104 82 102 90 L98 92 Z" fill="#fde68a" stroke="#ca8a04" stroke-width=".8"/>`);
+    else {
+      // 빛의 창
+      const top = 50 - st * 6;
+      s.push(`<line x1="83" y1="134" x2="89" y2="${top + 12}" stroke="${st >= 3 ? '#facc15' : '#e5e7eb'}" stroke-width="3" stroke-linecap="round"/>`);
+      s.push(`<path d="M86 ${top + 14} L89.5 ${top - 2} L93 ${top + 14} Z" fill="#fef9c3" stroke="#facc15" stroke-width=".8"/>`);
+      if (st >= 3) s.push(`<circle cx="89.5" cy="${top + 6}" r="${8 + st}" fill="#fef08a" opacity=".35"/>`);
+    }
+  } else if (cls === 'demon') {
+    // 삼지창 → 불꽃 삼지창
+    const top = 52 - st * 5, c = st >= 3 ? '#1c1917' : '#57534e';
+    s.push(`<line x1="84" y1="134" x2="88" y2="${top + 12}" stroke="${c}" stroke-width="3" stroke-linecap="round"/>`);
+    s.push(`<path d="M80 ${top + 12} h16 M80 ${top + 12} v-9 M88 ${top + 12} v-13 M96 ${top + 12} v-9" stroke="${c}" stroke-width="2.5" fill="none" stroke-linecap="round"/>`);
+    if (st >= 2) s.push(`<path d="M84 ${top + 2} q4 -10 4 -16 q4 6 6 16 Z" fill="${st >= 4 ? '#a855f7' : '#f97316'}" opacity=".85"/>`);
   } else if (cls === 'golem') {
     const y = 68 - st * 4, c = ['#a8a29e', '#78716c', '#64748b', '#7dd3fc'][st - 1];
     s.push(`<line x1="83" y1="112" x2="90" y2="${y + 8}" stroke="${st >= 3 ? '#475569' : '#78350f'}" stroke-width="4" stroke-linecap="round"/>`);
@@ -963,10 +1165,92 @@ function headgear(cls, st, p) {
     if (st === 4) h.push(`<path d="M44 24 L46 12 L52 19 L60 8 L68 19 L74 12 L76 24 Z" fill="#facc15" stroke="#b8860b"/>`);
     return h.join('');
   }
+  if (cls === 'duke') {
+    if (st === 1) return `<path d="M36 40 Q36 18 60 18 Q84 18 84 40 Z" fill="#475569"/><rect x="34" y="34" width="52" height="8" rx="4" fill="${p.fur}"/>`;
+    if (st === 3) return band('#cbd5e1') + `<path d="M60 26 l3 5 l-3 4 l-3 -4 Z" fill="#60a5fa"/>`;
+    if (st === 4) return glowGem('#bfdbfe', 18) + `<path d="M42 30 L44 12 L50 22 L55 6 L60 18 L65 6 L70 22 L76 12 L78 30 Z" fill="#e0f2fe" stroke="#60a5fa" stroke-width="1.2"/><circle cx="60" cy="25" r="2.6" fill="#3b82f6"/>`;
+    return '';
+  }
+  if (cls === 'monk') {
+    const c = ['#dc2626', '#dc2626', '#1c1917', '#facc15'][st - 1];
+    return band(c, 32) + `<path d="M80 36 Q92 38 96 48 M80 38 Q90 44 90 54" stroke="${c}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  }
+  if (cls === 'cleric') {
+    if (st === 1) return hood(p.hood);
+    if (st === 2) return `<path d="M46 27 Q60 16 74 27 Z" fill="#ffffff" stroke="#d6d3d1"/>`;
+    // 3단계부터 주교관(뾰족한 모자), 4단계는 금빛 + 후광
+    const h = [`<path d="M45 34 L49 8 L60 0 L71 8 L75 34 Z" fill="${p.hat}" stroke="${p.trim}" stroke-width="1.5"/>`,
+      `<path d="M60 8 v18 M54 15 h12" stroke="${p.trim === '#facc15' ? '#b91c1c' : p.trim}" stroke-width="2.5"/>`];
+    if (st === 4) h.unshift(`<ellipse cx="60" cy="16" rx="30" ry="30" fill="#fef9c3" opacity=".25"/>`);
+    return h.join('');
+  }
+  if (cls === 'bard') {
+    if (st === 1) return `<ellipse cx="55" cy="27" rx="22" ry="8" fill="${p.hat}"/><circle cx="55" cy="21" r="3" fill="${p.hat}"/>`;
+    const big = st >= 3 ? 4 : 0;
+    const h = [`<ellipse cx="56" cy="27" rx="${24 + big}" ry="${8 + big / 2}" fill="${p.hat}"/>`,
+      `<path d="M66 24 Q${86 + big * 2} ${6 - big * 2} ${98 + big} ${8 - big} Q${86 + big} 16 70 26 Z" fill="${st >= 3 ? '#fde047' : '#f9a8d4'}"/>`];
+    if (st === 4) h.push(`<path d="M34 28 Q56 32 80 27" stroke="#facc15" stroke-width="2.5" fill="none"/>`);
+    return h.join('');
+  }
+  if (cls === 'catfolk') {
+    if (st === 3) return band('#b91c1c', 33) + `<path d="M80 36 Q92 30 96 20 Q90 30 80 33 Z" fill="#fde047"/>`;
+    if (st === 4) return crown('#facc15', '#ef4444', 18);
+    return '';
+  }
+  if (cls === 'angel') {
+    if (st === 4) return `<path d="M40 32 Q60 24 80 32" stroke="#facc15" stroke-width="3" fill="none"/>` +
+      [44, 52, 68, 76].map(x => `<ellipse cx="${x}" cy="29" rx="2" ry="4" fill="#facc15" transform="rotate(${x < 60 ? -40 : 40} ${x} 29)"/>`).join('');
+    return '';
+  }
+  if (cls === 'demon') {
+    if (st === 4) return crown('#1c1917', '#a855f7', 16).replace('#b8860b', '#facc15');
+    return '';
+  }
   if (cls === 'golem') {
     if (st === 3) return `<path d="M54 36 h12 M60 32 v8" stroke="#38bdf8" stroke-width="2"/>`;
     if (st === 4) return `<path d="M44 26 L42 6 L50 20 Z M60 20 L60 -2 L66 18 Z M76 26 L80 6 L72 20 Z" fill="#bae6fd" stroke="#0ea5e9"/>` + glowGem('#bae6fd', 12) + `<path d="M54 36 h12 M60 32 v8" stroke="#0ea5e9" stroke-width="2"/>`;
     return '';
   }
   return '';
+}
+
+// 슬라임: 사람 몸 대신 말랑한 젤리 몸. 단계마다 커지고 색·장식이 바뀜
+function slimeSVG(stage, fem) {
+  const C = [['#a7f3d0', '#34d399'], ['#bae6fd', '#38bdf8'], ['#fbcfe8', '#f472b6'], ['#86efac', '#16a34a'], ['#4ade80', '#15803d'],
+    ['#e2e8f0', '#64748b'], ['#fde68a', '#d97706'], ['#99f6e4', '#0d9488'], ['#c4b5fd', '#7c3aed'], ['#93c5fd', '#1d4ed8']][stage - 1];
+  const w = 34 + stage * 5, h = w * .78, top = 138 - h, cy = 138 - h * .52;
+  const o = [`<svg viewBox="0 -14 120 164" xmlns="http://www.w3.org/2000/svg" class="hero-svg">`];
+  o.push(`<defs><radialGradient id="aura-slime"><stop offset="0" stop-color="#86efac" stop-opacity=".75"/><stop offset="1" stop-color="#86efac" stop-opacity="0"/></radialGradient></defs>`);
+  if (stage >= 9) o.push(`<circle cx="60" cy="96" r="60" fill="url(#aura-slime)"/>`);
+  if (stage === 10) o.push(wings10('rays'));
+  if (stage >= 7) for (const [x, y, s] of [[14, 40, 1], [106, 30, 1.2], [104, 100, .9], [16, 108, 1]])
+    o.push(`<path transform="translate(${x} ${y}) scale(${s})" d="M0 -6 L1.6 -1.6 L6 0 L1.6 1.6 L0 6 L-1.6 1.6 L-6 0 L-1.6 -1.6 Z" fill="#fff6b0"/>`);
+  o.push(`<ellipse cx="60" cy="140" rx="${w / 2 + 4}" ry="5" fill="rgba(0,0,0,.25)"/>`);
+  // 9단계: 등 뒤 망토
+  if (stage >= 9) o.push(`<path d="M${60 - w * .35} ${cy - 4} Q60 ${cy - 14} ${60 + w * .35} ${cy - 4} L${60 + w * .55} 138 L${60 - w * .55} 138 Z" fill="${stage === 10 ? '#b91c1c' : '#4c1d95'}"/>`);
+  // 몸통 (2단계 물방울은 위가 뾰족)
+  const peak = stage === 2 ? `Q${60 - w * .15} ${top + h * .25} 60 ${top - 8} Q${60 + w * .15} ${top + h * .25}` : `Q${60 - w / 2} ${top} 60 ${top} Q${60 + w / 2} ${top}`;
+  o.push(`<path d="M${60 - w / 2} 138 ${stage === 2 ? `Q${60 - w / 2} ${top + h * .4} ${60 - w * .2} ${top + h * .2} ` : ''}${peak} ${60 + w / 2} 138 Z" fill="${C[0]}" stroke="${C[1]}" stroke-width="2"/>`);
+  o.push(`<path d="M${60 - w / 2 + 4} 136 q4 6 8 0 M${60 + w / 2 - 14} 136 q4 6 8 0" fill="${C[0]}" stroke="${C[1]}" stroke-width="1.5"/>`);
+  o.push(`<ellipse cx="${60 - w * .22}" cy="${top + h * .28}" rx="${w * .1}" ry="${h * .08}" fill="#fff" opacity=".7"/>`);
+  if (stage === 6) o.push(`<path d="M${60 - w * .3} ${cy + 14} h${w * .6}" stroke="#94a3b8" stroke-width="2" stroke-dasharray="3 3"/>`);
+  // 얼굴
+  const ex = w * .17, er = 2.6 + stage * .25;
+  o.push(`<circle cx="${60 - ex}" cy="${cy}" r="${er}" fill="#1f2937"/><circle cx="${60 + ex}" cy="${cy}" r="${er}" fill="#1f2937"/>`);
+  o.push(`<circle cx="${60 - ex + 1}" cy="${cy - 1}" r="${er * .35}" fill="#fff"/><circle cx="${60 + ex + 1}" cy="${cy - 1}" r="${er * .35}" fill="#fff"/>`);
+  if (fem) o.push(`<path d="M${60 - ex - er} ${cy - er + .5} l-2.5 -2 M${60 + ex + er} ${cy - er + .5} l2.5 -2" stroke="#1f2937" stroke-width="1.2" stroke-linecap="round"/>`);
+  o.push(`<ellipse cx="${60 - ex * 1.6}" cy="${cy + 6}" rx="3.5" ry="2" fill="#f472b6" opacity=".45"/><ellipse cx="${60 + ex * 1.6}" cy="${cy + 6}" rx="3.5" ry="2" fill="#f472b6" opacity=".45"/>`);
+  o.push(stage === 1
+    ? `<path d="M56 ${cy + 7} Q60 ${cy + 4} 64 ${cy + 7}" stroke="#1f2937" stroke-width="1.8" fill="none" stroke-linecap="round"/>`
+    : `<path d="M55 ${cy + 5} Q60 ${cy + 10} 65 ${cy + 5}" stroke="${fem ? '#be185d' : '#1f2937'}" stroke-width="1.8" fill="none" stroke-linecap="round"/>`);
+  if (stage === 1) o.push(`<path d="M${60 + w * .32} ${top + 6} q-3 5 0 7 q3 -2 0 -7 Z" fill="#7dd3fc" stroke="#38bdf8" stroke-width=".6"/>`);
+  // 머리 위 장식: 8 투구, 9 투구+칼, 10 왕관
+  if (stage === 8 || stage === 9) {
+    o.push(`<path d="M${60 - w * .3} ${top + 8} Q60 ${top - 14} ${60 + w * .3} ${top + 8} Z" fill="#cbd5e1" stroke="#64748b"/><rect x="58" y="${top - 12}" width="4" height="8" fill="#ef4444"/>`);
+    if (stage === 9) o.push(`<rect x="${60 + w / 2 + 2}" y="${cy - 30}" width="4" height="34" fill="#e5e7eb" stroke="#64748b" stroke-width=".6"/><rect x="${60 + w / 2 - 3}" y="${cy + 3}" width="14" height="3.5" fill="#facc15"/>`);
+  }
+  if (stage === 10) o.push(`<path d="M${60 - 16} ${top + 4} L${60 - 14} ${top - 12} L${60 - 7} ${top - 4} L60 ${top - 18} L${60 + 7} ${top - 4} L${60 + 14} ${top - 12} L${60 + 16} ${top + 4} Z" fill="#facc15" stroke="#b8860b"/><circle cx="60" cy="${top - 2}" r="2.5" fill="#ef4444"/>`);
+  if (fem && stage < 8) o.push(`<path d="M${60 + w * .18} ${top + 4} l-7 -5 v10 Z M${60 + w * .18} ${top + 4} l7 -5 v10 Z" fill="#f472b6"/><circle cx="${60 + w * .18}" cy="${top + 4}" r="2.2" fill="#ec4899"/>`);
+  o.push(`</svg>`);
+  return o.join('');
 }

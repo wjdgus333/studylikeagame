@@ -1,5 +1,5 @@
 // 오프라인 실행용. 인터넷이 되면 항상 최신 파일을 받고(캐시 문제 방지), 안 되면 저장된 파일로 실행
-const CACHE = 'levelup-v14';
+const CACHE = 'levelup-v15';
 const LANGS = ['en', 'ja', 'zh-CN', 'zh-TW', 'es', 'pt', 'fr', 'de', 'id', 'vi', 'th', 'ru', 'tr', 'hi'];
 const FILES = ['./', './index.html', './hero.js', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png',
   './lang/keys.js', ...LANGS.map(l => `./lang/${l}.js`)];
