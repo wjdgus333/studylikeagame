@@ -17,7 +17,7 @@ html,body{margin:0;height:100%}
 body{background:var(--bg);color:var(--text);font-family:-apple-system,system-ui,"Apple SD Gothic Neo","Malgun Gothic","Segoe UI",Roboto,"Noto Sans",sans-serif;
   -webkit-user-select:none;user-select:none}
 input,select,button{font:inherit}
-#app{max-width:520px;margin:0 auto;min-height:100vh;min-height:100dvh;padding:16px 16px calc(84px + env(safe-area-inset-bottom))}
+#app{max-width:520px;margin:0 auto;min-height:100vh;min-height:100dvh;padding:calc(16px + env(safe-area-inset-top)) 16px calc(84px + env(safe-area-inset-bottom) + var(--ad-h, 0px))}
 h1,h2,h3{margin:0}
 .card{background:var(--card);border-radius:18px;padding:16px;margin-bottom:14px}
 .row{display:flex;align-items:center;gap:10px}
@@ -198,7 +198,8 @@ nav button.on{color:var(--gold)}
 .jcard small{color:var(--sub);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .jcard .mbar{height:6px;background:var(--bg2);border-radius:999px;overflow:hidden;margin-top:4px}
 .jcard .mbar i{display:block;height:100%;background:var(--c)}
-.jcard .now{position:absolute;top:8px;right:8px;font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px;background:var(--c);color:#1a1530}
+.jcard .now{position:absolute;top:8px;left:8px;font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px;background:var(--c);color:#1a1530}
+.jcard .jdel{position:absolute;top:6px;right:6px;width:28px;height:28px;border-radius:999px;border:0;background:rgba(255,255,255,.08);color:rgba(255,255,255,.75);font-size:15px;line-height:1;cursor:pointer;z-index:1}
 .gtog{display:flex;gap:4px;margin-top:8px}
 .gtog button{flex:1;padding:4px 0;border-radius:8px;border:1px solid var(--line);background:var(--bg2);font-size:16px;cursor:pointer;opacity:.5}
 .gtog button.on{opacity:1;border-color:var(--c);background:var(--card2)}
@@ -243,7 +244,7 @@ const dayKey = (t = Date.now()) => new Date(t).toLocaleDateString('sv');  // YYY
 // ---------- 언어 ----------
 // 한국어 문장이 번역의 열쇠. lang/keys.js 의 한국어 목록과 lang/언어.js 의 번역 목록이 같은 순서. 없으면 한국어 그대로
 const LANGS = {
-  ko: ['한국어', 'ko-KR'], en: ['English', 'en-US'], ja: ['日本語', 'ja-JP'], 'zh-CN': ['简体中文', 'zh-CN'], 'zh-TW': ['繁體中文', 'zh-TW'],
+  ko: ['한국어', 'ko-KR'], en: ['English', 'en-US'], ja: ['日本語', 'ja-JP'],
   es: ['Español', 'es-ES'], pt: ['Português', 'pt-BR'], fr: ['Français', 'fr-FR'], de: ['Deutsch', 'de-DE'], id: ['Bahasa Indonesia', 'id-ID'],
   vi: ['Tiếng Việt', 'vi-VN'], th: ['ไทย', 'th-TH'], ru: ['Русский', 'ru-RU'], tr: ['Türkçe', 'tr-TR'], hi: ['हिन्दी', 'hi-IN'],
 };
@@ -258,7 +259,6 @@ function guessLang() {
   try { const s = localStorage.getItem(LANG_KEY); if (LANGS[s]) return s; } catch (e) {}
   for (const n of navigator.languages || [navigator.language || 'en']) {
     const l = n.toLowerCase();
-    if (l.startsWith('zh')) return /tw|hk|mo|hant/.test(l) ? 'zh-TW' : 'zh-CN';
     const p = l.split('-')[0];
     if (LANGS[p]) return p;
   }
@@ -270,7 +270,7 @@ const loadScript = src => new Promise(ok => {
   document.head.appendChild(s);
 });
 // 번역 파일을 고치면 APP_V 를 올려서 옛 파일(브라우저 캐시)이 쓰이지 않게 함
-const APP_V = '2.2';
+const APP_V = '3.3';
 async function loadLang(code) {
   if (code === 'ko' || I18N[code]) return;
   if (!window.I18N_KEYS) await loadScript(`lang/keys.js?v=${APP_V}`);
@@ -289,7 +289,7 @@ function applyLang() {
   LOCALE = LANGS[lang][1];
   document.documentElement.lang = lang;
   document.title = t('레벨업 라이프');
-  for (const c of Object.values(CLASSES)) {
+  for (const [k, c] of Object.entries(CLASSES)) {
     if (c.custom) continue;
     c.ko ||= { name: c.name, stages: c.stages };
     c.name = t(c.ko.name); c.stages = c.ko.stages.map(s => t(s));
@@ -347,6 +347,9 @@ function migrate(d) {
   d.custom ||= [];
   d.memos ||= [];
   d.hero.genders ||= {};
+  delete d.hero.nicks;   // v2.6 에 잠깐 있던 직업 이름 바꾸기 (없앰)
+  d.hero.hidden ||= [];  // 지운(숨긴) 기본 직업 — 직업 탭 아래에서 되살릴 수 있음
+  d.gone ||= {};         // 지운 내 캐릭터 중 기록을 남긴 것의 이름·아이콘·색
   // v1.7 의 전체 성별 설정은 모든 기본 직업에 나눠 넣음
   if (d.hero.gender) {
     if (d.hero.gender === 'f') for (const k of Object.keys(CLASSES)) if (!CLASSES[k].custom) d.hero.genders[k] = 'f';
@@ -354,7 +357,7 @@ function migrate(d) {
   }
   syncCustom(d);
   if (!CLASSES[d.hero.cls]) d.hero.cls = 'warrior';
-  d.logs.forEach(l => { if (!CLASSES[l.cls]) l.cls = d.hero.cls; });
+  d.logs.forEach(l => { if (!CLASSES[l.cls] && !d.gone[l.cls]) l.cls = d.hero.cls; });
   return d;
 }
 function load() {
@@ -373,6 +376,12 @@ const totalXP = () => D.logs.reduce((s, l) => s + l.xp, 0);
 // 직업마다 경험치·단계가 따로 쌓임 (서로 연동 안 됨)
 const jobXP = cls => D.logs.reduce((s, l) => s + (l.cls === cls ? l.xp : 0), 0);
 const maxOf = cls => CLASSES[cls].stages.length;
+// 목록에 보일 직업: 한국어 전용(koOnly) 직업은 한국어일 때만. 단, 지금 키우는 직업이면 계속 보여줌
+// 지운(숨긴) 직업은 빼고
+const shownJobs = () => Object.entries(CLASSES).filter(([k, c]) => (!c.koOnly || lang === 'ko' || D?.hero?.cls === k) && !D?.hero?.hidden?.includes(k));
+// 기록에 적힌 직업 정보. 지운 내 캐릭터도 기록을 남겼으면 이름·아이콘·색이 보임
+const jobMeta = k => CLASSES[k] || D.gone[k] || { name: t('지운 캐릭터'), icon: '🗑️', color: '#8a8597' };
+const loggedJobs = () => [...Object.keys(CLASSES), ...Object.keys(D.gone)].filter(k => jobXP(k));
 const stageOf = (xp, cls) => Math.min(maxOf(cls), 1 + Math.floor(xp / STAGE_XP));
 const stLabel = n => t('{n}단계', { n });
 function streak() {
@@ -404,6 +413,7 @@ function render() {
   $('#nav').classList.remove('hidden');
   document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
   fitNav();
+  startAds();
   ({ home: renderHome, jobs: renderJobs, stats: renderStats, log: renderLog, acts: renderActs, memo: renderMemo, settings: renderSettings })[tab]();
   window.scrollTo(0, 0);
 }
@@ -440,9 +450,9 @@ function renderHome() {
   const xp = jobXP(D.hero.cls), st = stageOf(xp, D.hero.cls), C = CLASSES[D.hero.cls];
   const max = st >= maxOf(D.hero.cls);
   const cur = max ? STAGE_XP : xp - (st - 1) * STAGE_XP;
-  const started = Object.keys(CLASSES).filter(k => jobXP(k) > 0).length;
+  const jobs = shownJobs(), started = jobs.filter(([k]) => jobXP(k) > 0).length;
   $('#app').innerHTML = `
-    <button class="statusbtn" id="allJobs"><span>📋 ${t('전체 직업 현황')}</span><small>${t('{n}개 중 {m}개 키우는 중', { n: Object.keys(CLASSES).length, m: started })} ›</small></button>
+    <button class="statusbtn" id="allJobs"><span>📋 ${t('전체 직업 현황')}</span><small>${t('{n}개 중 {m}개 키우는 중', { n: jobs.length, m: started })} ›</small></button>
     <div class="card hero ${D.bg ? 'has-bg' : ''}" style="${bgStyle(D.bg)}">
       ${heroBlock(D.hero.cls, st)}
       <div class="hero-name">${esc(D.hero.name)}</div>
@@ -471,7 +481,7 @@ function renderHome() {
 
 // 모든 직업의 아이콘·이름·레벨만 간단히 (레벨 높은 순)
 function showAllJobs() {
-  const rows = Object.entries(CLASSES).map(([k, c], i) => ({ k, c, i, xp: jobXP(k), st: stageOf(jobXP(k), k), max: maxOf(k) }))
+  const rows = shownJobs().map(([k, c], i) => ({ k, c, i, xp: jobXP(k), st: stageOf(jobXP(k), k), max: maxOf(k) }))
     .sort((a, b) => b.st - a.st || b.xp - a.xp || a.i - b.i);
   const total = rows.reduce((s, r) => s + r.xp, 0), started = rows.filter(r => r.xp).length;
   openSheet(`
@@ -541,8 +551,9 @@ function showEvolve(st) {
 // ---------- 직업 (카테고리별로 골라서 키우기) ----------
 const JOB_CATS = {
   all: { name: '전체', has: () => true },
-  human: { name: '사람', has: (k, c) => !c.custom && HUMAN.includes(k) },
-  race: { name: '종족', has: (k, c) => !c.custom && !HUMAN.includes(k) },
+  human: { name: '사람', has: (k, c) => !c.custom && !c.special && HUMAN.includes(k) },
+  race: { name: '종족', has: (k, c) => !c.custom && !c.special && !HUMAN.includes(k) },
+  special: { name: '한국', has: (k, c) => !!c.special },
   mine: { name: '내 캐릭터', has: (k, c) => !!c.custom },
   growing: { name: '키우는 중', has: k => jobXP(k) > 0 },
 };
@@ -550,26 +561,31 @@ let jobCat = 'all';
 
 function renderJobs() {
   const cur = D.hero.cls, C = CLASSES[cur];
-  const list = Object.entries(CLASSES).filter(([k, c]) => JOB_CATS[jobCat].has(k, c));
-  const count = cat => Object.entries(CLASSES).filter(([k, c]) => JOB_CATS[cat].has(k, c)).length;
+  const count = cat => shownJobs().filter(([k, c]) => JOB_CATS[cat].has(k, c)).length;
+  if (jobCat === 'special' && !count('special')) jobCat = 'all';
+  const list = shownJobs().filter(([k, c]) => JOB_CATS[jobCat].has(k, c));
   $('#app').innerHTML = `
     <h2 style="margin:4px 2px 6px">🛡️ ${t('직업')}</h2>
     <p class="sub" style="margin:0 2px 12px">${t('키울 직업을 골라요. 기록한 포인트는 지금 고른 직업에만 쌓여요.')}<br>${t('지금 키우는 직업')}: <b style="color:${C.color}">${C.icon} ${esc(C.name)}</b></p>
-    <div class="jobfilter" id="jcat">${Object.entries(JOB_CATS).map(([k, v]) =>
+    <div class="jobfilter" id="jcat">${Object.entries(JOB_CATS).filter(([k]) => k !== 'special' || count(k)).map(([k, v]) =>
       `<button data-cat="${k}" class="${k === jobCat ? 'on' : ''}">${t(v.name)} ${count(k)}</button>`).join('')}</div>
     <div class="jgrid">${list.map(([k, c]) => {
       const xp = jobXP(k), st = stageOf(xp, k), max = maxOf(k), p = st >= max ? 100 : (xp - (st - 1) * STAGE_XP) / STAGE_XP * 100;
       const g = genderOf(k);
       return `<div class="jcard ${k === cur ? 'on' : ''}" data-pick="${k}" role="button" tabindex="0" style="--c:${c.color}">
         ${k === cur ? `<span class="now">${t('키우는 중')}</span>` : ''}
+        <button class="jdel" data-jdel="${k}" aria-label="${esc(t('이 캐릭터 지우기'))}">✕</button>
         <div class="art">${heroArt(k, st)}</div>
         <b>${c.icon} ${esc(c.name)}</b>
         <small>${t('{n} / {m}단계', { n: st, m: max })} · ${esc(c.stages[st - 1])}</small>
         <small>${xp ? `${fmt(xp)}P` : t('아직 시작 전')}</small>
         <div class="mbar"><i style="width:${p}%"></i></div>
-        ${c.custom ? '' : `<div class="gtog"><button data-gk="${k}" data-g="m" class="${g === 'm' ? 'on' : ''}" aria-label="${esc(t('남성'))}">👦</button><button data-gk="${k}" data-g="f" class="${g === 'f' ? 'on' : ''}" aria-label="${esc(t('여성'))}">👧</button></div>`}</div>`; }).join('')}
+        ${c.custom || c.imgs ? '' : `<div class="gtog"><button data-gk="${k}" data-g="m" class="${g === 'm' ? 'on' : ''}" aria-label="${esc(t('남성'))}">👦</button><button data-gk="${k}" data-g="f" class="${g === 'f' ? 'on' : ''}" aria-label="${esc(t('여성'))}">👧</button></div>`}</div>`; }).join('')}
       ${jobCat === 'all' || jobCat === 'mine' ? `<button class="jcard add" id="addChar"><span>＋</span><b>${t('캐릭터 추가하기')}</b><small>${t('사진으로 만들기')}</small></button>` : ''}</div>
-    ${!list.length ? `<div class="card empty">${jobCat === 'growing' ? t('아직 키우는 직업이 없어요. 직업을 골라 기록해 보세요!') : t('아직 만든 캐릭터가 없어요.')}</div>` : ''}`;
+    ${!list.length ? `<div class="card empty">${jobCat === 'growing' ? t('아직 키우는 직업이 없어요. 직업을 골라 기록해 보세요!') : t('아직 만든 캐릭터가 없어요.')}</div>` : ''}
+    ${D.hero.hidden.length ? `<button class="btn block" id="restore" style="margin-top:12px">♻️ ${t('지운 직업 되살리기')} ${D.hero.hidden.length}</button>` : ''}`;
+  document.querySelectorAll('[data-jdel]').forEach(b => b.onclick = e => { e.stopPropagation(); deleteJob(b.dataset.jdel); });
+  $('#restore')?.addEventListener('click', restoreSheet);
   document.querySelectorAll('#jcat [data-cat]').forEach(b => b.onclick = () => { jobCat = b.dataset.cat; renderJobs(); });
   // 카드 안의 👦/👧: 그 직업 그림만 남성·여성으로 바꿈 (직업 선택은 안 함)
   document.querySelectorAll('[data-gk]').forEach(b => b.onclick = e => {
@@ -587,6 +603,48 @@ function renderJobs() {
   $('#addChar')?.addEventListener('click', () => editCustom());
 }
 
+// 직업·캐릭터 지우기 (카드 오른쪽 위 ✕ 버튼). 지울 때 그 캐릭터로 쌓은 기록을 같이 지울지, 통계·그래프용으로 남길지 고름
+function deleteJob(k) {
+  const c = CLASSES[k], mine = c.custom;
+  if (!shownJobs().some(([x]) => x !== k)) return toast(t('마지막 남은 캐릭터는 지울 수 없어요'), '', true);
+  const logs = D.logs.filter(l => l.cls === k), xp = logs.reduce((s, l) => s + l.xp, 0);
+  const done = keep => {
+    if (!keep) D.logs = D.logs.filter(l => l.cls !== k);
+    if (mine) {
+      D.custom = D.custom.filter(x => x.key !== k);
+      if (keep && logs.length) D.gone[k] = { name: c.name, icon: c.icon, color: c.color };
+      syncCustom(D);
+    } else if (!D.hero.hidden.includes(k)) D.hero.hidden.push(k);
+    if (D.hero.cls === k) D.hero.cls = shownJobs()[0][0];
+    save(); closeSheet(); render();
+    toast(t('지웠어요'), keep && logs.length ? t('기록은 통계와 그래프에 그대로 남아 있어요') : '', true);
+  };
+  openSheet(`<h2>${esc(t("'{name}' 캐릭터를 지울까요?", { name: c.name }))}</h2>
+    <p class="sub" style="line-height:1.6">${mine ? t('사진과 단계 정보는 지워지고 되돌릴 수 없어요.') : t('직업 목록에서 사라져요. 직업 탭 맨 아래에서 다시 되살릴 수 있어요.')}</p>
+    ${logs.length ? `<p style="line-height:1.6;margin:0 0 12px">${t('이 캐릭터로 쌓은 기록 {n}개({p}P)는 어떻게 할까요?', { n: logs.length, p: fmt(xp) })}</p>
+      <button class="btn block" id="keep" style="text-align:left">📦 <b>${t('기록은 남기기')}</b><br><small class="sub">${t('기록·통계·그래프에 그대로 보여요')}</small></button>
+      <button class="btn danger block" id="wipe" style="margin-top:8px;text-align:left">🗑️ <b>${t('기록도 함께 지우기')}</b><br><small>${t('기록·통계·그래프에서 빠지고 되돌릴 수 없어요')}</small></button>`
+    : `<button class="btn danger block" id="wipe">${t('지우기')}</button>`}
+    <button class="btn block" style="margin-top:8px" id="cancel">${t('취소')}</button>`);
+  $('#keep')?.addEventListener('click', () => done(true));
+  $('#wipe').onclick = () => done(false);
+  $('#cancel').onclick = closeSheet;
+}
+// 지운 기본 직업을 다시 목록에 꺼냄 (기록을 남겼으면 단계도 그대로)
+function restoreSheet() {
+  const ks = D.hero.hidden.filter(k => CLASSES[k]);
+  if (!ks.length) { closeSheet(); return render(); }
+  openSheet(`<h2>♻️ ${t('지운 직업 되살리기')}</h2>
+    <div class="list">${ks.map(k => `<div class="item"><span class="ic">${CLASSES[k].icon}</span>
+      <div class="grow"><b>${esc(CLASSES[k].name)}</b><span class="sub">${jobXP(k) ? `${fmt(jobXP(k))}P` : t('아직 시작 전')}</span></div>
+      <button class="btn" data-back="${k}" style="padding:8px 12px">${t('되살리기')}</button></div>`).join('')}</div>
+    <button class="btn block" style="margin-top:12px" id="cancel">${t('닫기')}</button>`);
+  document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => {
+    D.hero.hidden = D.hero.hidden.filter(x => x !== b.dataset.back); save(); render(); restoreSheet();
+  });
+  $('#cancel').onclick = closeSheet;
+}
+
 // ---------- 통계 (일/주/월/년 차트) ----------
 // 활동 색: 활동 목록 순서대로 고정 (순위가 바뀌어도 색은 그대로). 8번째부터·지운 활동은 '기타'
 const SERIES_COLORS = ['#3987e5', '#d95926', '#199e70', '#c98500', '#d55181', '#008300', '#9085e9'];
@@ -599,7 +657,7 @@ const PERIODS = {
 };
 let statPeriod = 'day', statMode = 'acts', rankScope = 'cur', statJob = 'all';
 let statJobsOpen = false;  // 직업 필터 펼침 (접으면 '전체'와 고른 직업만)
-const jobInfo = k => ({ name: CLASSES[k].name, icon: CLASSES[k].icon, color: CLASSES[k].color });
+const jobInfo = k => { const j = jobMeta(k); return { name: j.name, icon: j.icon, color: j.color }; };
 
 function periodStart(ts, period) {
   const d = new Date(ts); d.setHours(0, 0, 0, 0);
@@ -653,6 +711,7 @@ function changeHTML(cur, prev) {
 }
 
 function renderStats() {
+  if (statJob !== 'all' && !shownJobs().some(([k]) => k === statJob)) statJob = 'all';  // 지운 직업을 보고 있었으면 전체로
   const P = PERIODS[statPeriod], bs = buckets(statPeriod);
   const idx = new Map(bs.map((b, i) => [b.key, i]));
   const byJob = statMode === 'jobs';
@@ -670,7 +729,7 @@ function renderStats() {
     inRange.push({ l, i, s });
   }
   // 범례 순서 = 활동 목록 순서 (기타는 맨 뒤) / 직업 순서
-  const ids = (byJob ? Object.keys(CLASSES) : [...D.acts.slice(0, SERIES_COLORS.length).map(a => a.id), '__other']).filter(id => data[id]);
+  const ids = (byJob ? [...Object.keys(CLASSES), ...Object.keys(D.gone)] : [...D.acts.slice(0, SERIES_COLORS.length).map(a => a.id), '__other']).filter(id => data[id]);
   const last = bs.length - 1;
   const cur = total[last], prev = total[last - 1];
 
@@ -685,10 +744,10 @@ function renderStats() {
     <h2 style="margin:4px 2px 14px">📈 ${t('통계')}</h2>
     <div class="seg period" id="per" style="margin-bottom:10px">${Object.entries(PERIODS).map(([k, v]) =>
       `<button data-p="${k}" class="${k === statPeriod ? 'on' : ''}">${t(v.name)}</button>`).join('')}</div>
-    <div class="jobfilter" id="jf"><button data-j="all" class="${statJob === 'all' ? 'on' : ''}">${t('전체 직업')}</button>${Object.entries(CLASSES)
+    <div class="jobfilter" id="jf"><button data-j="all" class="${statJob === 'all' ? 'on' : ''}">${t('전체 직업')}</button>${shownJobs()
       .filter(([k]) => statJobsOpen || k === statJob).map(([k, c]) =>
       `<button data-j="${k}" class="${k === statJob ? 'on' : ''}">${c.icon} ${esc(c.name)}</button>`).join('')}
-      <button id="jfMore" class="more">${statJobsOpen ? `▴ ${t('접기')}` : `▾ ${t('직업 모두 보기')} ${Object.keys(CLASSES).length}`}</button></div>
+      <button id="jfMore" class="more">${statJobsOpen ? `▴ ${t('접기')}` : `▾ ${t('직업 모두 보기')} ${shownJobs().length}`}</button></div>
     <div class="card">
       <div class="sub">${J ? `${J.icon} ${esc(J.name)} · ` : ''}${t('{when} 얻은 포인트', { when: t(P.cur) })}</div>
       <div class="big-stat"><b>${fmt(cur)}P</b>${changeHTML(cur, prev)}<span class="sub">${t(P.prev)} ${fmt(prev)}P</span></div>
@@ -800,8 +859,8 @@ function renderLog() {
       <div class="chart">${bars.map(b => `<div class="${b.today ? 'today' : ''}"><em>${b.v ? fmt(b.v) : ''}</em><i style="height:${b.v / mx * 85}%"></i><small>${esc(b.label)}</small></div>`).join('')}</div>
     </div>
     ${top.length ? `<div class="card rank"><b>${t('직업별 누적')}</b><div class="list" style="margin-top:6px">
-      ${Object.entries(CLASSES).filter(([k]) => jobXP(k)).map(([k, c]) => `<div class="item"><span class="ic">${c.icon}</span>
-        <div class="grow"><b>${esc(c.name)} <span class="tag" style="color:${c.color}">${stLabel(stageOf(jobXP(k), k))}</span></b>
+      ${loggedJobs().map(k => [k, jobMeta(k)]).map(([k, c]) => `<div class="item"><span class="ic">${c.icon}</span>
+        <div class="grow"><b>${esc(c.name)} <span class="tag" style="color:${c.color}">${CLASSES[k] ? stLabel(stageOf(jobXP(k), k)) : t('지운 캐릭터')}</span></b>
           <div class="from">${fromActs(D.logs.filter(l => l.cls === k), 6)}</div></div>
         <span class="pts">${fmt(jobXP(k))}P</span></div>`).join('')}</div></div>` : ''}
     ${top.length ? `<div class="card"><b>${t('활동별 누적')}</b><div class="list" style="margin-top:6px">
@@ -813,7 +872,7 @@ function renderLog() {
         <div class="list">${ls.map(l => `
           <div class="item"><span class="ic">${l.icon}</span>
             <div class="grow"><b>${esc(t(l.name))} ${esc(amt(l.amount, l.unit))}</b>
-              <span class="sub">${new Date(l.t).toTimeString().slice(0, 5)}</span><span class="tag" style="color:${CLASSES[l.cls].color}">${CLASSES[l.cls].icon} ${esc(CLASSES[l.cls].name)}</span>${(l.notes || []).map(n => `<span class="tag bonus">${esc(n)}</span>`).join('')}</div>
+              <span class="sub">${new Date(l.t).toTimeString().slice(0, 5)}</span><span class="tag" style="color:${jobMeta(l.cls).color}">${jobMeta(l.cls).icon} ${esc(jobMeta(l.cls).name)}</span>${(l.notes || []).map(n => `<span class="tag bonus">${esc(n)}</span>`).join('')}</div>
             <span class="pts">+${fmt(l.xp)}</span>
             <button class="iconbtn" data-del="${l.id}" aria-label="${esc(t('지우기'))}">🗑️</button></div>`).join('')}</div>`).join('')
       : `<div class="empty">${t('아직 기록이 없어요. 홈에서 오늘 한 일을 기록해 보세요!')}</div>`}
@@ -990,7 +1049,7 @@ function renderSettings() {
       <div id="pvGrid" class="hidden" style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:10px"></div>
     </div>
     <button class="btn danger block" id="reset">${t('처음부터 다시 시작 (전체 초기화)')}</button>
-    <p class="sub" style="text-align:center;margin-top:16px">${t('레벨업 라이프')} v${APP_V}</p>`;
+    <p class="sub" style="text-align:center;margin-top:16px">${t('레벨업 라이프')} v${APP_V} · <a href="https://wjdgus333.github.io/studylikeagame/privacy.html" target="_blank" rel="noopener" style="color:inherit">${t('개인정보처리방침')}</a></p>`;
   bindLang('langSel');
   bindBgPicker();
   $('#pvBtn').onclick = () => {
@@ -1004,10 +1063,19 @@ function renderSettings() {
   $('#cls').onclick = () => { tab = 'jobs'; render(); };
   $('#addChar').onclick = () => editCustom();
   document.querySelectorAll('[data-cedit]').forEach(b => b.onclick = () => editCustom(b.dataset.cedit));
-  $('#exp').onclick = () => {
-    const blob = new Blob([JSON.stringify(D, null, 1)], { type: 'application/json' });
+  $('#exp').onclick = async () => {
+    const name = `levelup-backup-${dayKey()}.json`, json = JSON.stringify(D, null, 1);
+    // 안드로이드 앱: 다운로드가 안 돼서 파일을 만든 뒤 공유 창(카톡·드라이브·메일 등)으로 보냄
+    if (NATIVE) {
+      try {
+        const { uri } = await NATIVE.Filesystem.writeFile({ path: name, data: json, directory: 'CACHE', encoding: 'utf8' });
+        await NATIVE.Share.share({ title: name, files: [uri], dialogTitle: t('백업 저장') });
+      } catch (e) { if (!/cancel/i.test(e?.message || '')) toast(t('백업 파일을 만들지 못했어요'), '', true); }
+      return;
+    }
+    const blob = new Blob([json], { type: 'application/json' });
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob); a.download = `levelup-backup-${dayKey()}.json`; a.click();
+    a.href = URL.createObjectURL(blob); a.download = name; a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   };
   $('#imp').onclick = () => $('#file').click();
@@ -1016,13 +1084,13 @@ function renderSettings() {
     try {
       const d = JSON.parse(await f.text());
       if (!d.hero || !Array.isArray(d.logs) || !Array.isArray(d.acts)) throw 0;
-      confirmSheet(t('백업을 불러올까요?'), t('기록 {n}개 · 지금 데이터는 백업 내용으로 바뀌어요.', { n: d.logs.length }), t('불러오기'), () => { D = migrate(d); save(); render(); });
+      confirmSheet(t('백업을 불러올까요?'), t('기록 {n}개 · 지금 데이터는 백업 내용으로 바뀌어요.', { n: d.logs.length }), t('불러오기'), () => { D = migrate(d); applyLang(); save(); render(); });
     } catch (err) { toast(t('백업 파일이 아니에요'), '', true); }
     e.target.value = '';
   };
   $('#reset').onclick = () => confirmSheet(t('정말 처음부터 시작할까요?'), t('캐릭터, 기록, 활동이 모두 지워져요. 되돌릴 수 없어요.'), t('전부 지우기'), () => {
     try { localStorage.removeItem(KEY); } catch (e) {}
-    D = null; syncCustom(null); tab = 'home'; render();
+    D = null; syncCustom(null); applyLang(); tab = 'home'; render();
   });
 }
 
@@ -1170,15 +1238,7 @@ function editCustom(key) {
     syncCustom(D); closeSheet(); tab = 'home'; render();
     toast(old ? t('저장했어요') : t('캐릭터 완성!'), `${item.icon} ${item.name} · ${stLabel(n)}`);
   };
-  if (old) $('#del').onclick = () => {
-    const logs = D.logs.filter(l => l.cls === old.key), xp = logs.reduce((s, l) => s + l.xp, 0);
-    confirmSheet(esc(t("'{name}' 캐릭터를 지울까요?", { name: old.name })), t('이 캐릭터로 쌓은 기록 {n}개({p}P)도 함께 지워져요. 되돌릴 수 없어요.', { n: logs.length, p: fmt(xp) }), t('지우기'), () => {
-      D.custom = D.custom.filter(x => x.key !== old.key);
-      D.logs = D.logs.filter(l => l.cls !== old.key);
-      if (D.hero.cls === old.key) D.hero.cls = 'warrior';
-      syncCustom(D); save(); render();
-    });
-  };
+  if (old) $('#del').onclick = () => deleteJob(old.key);
   draw();
 }
 
@@ -1202,10 +1262,10 @@ function renderSetup() {
   bindLang('langSetup');
   const pickGender = () => bindGender(g => { setupGender = g; $('#gbox').innerHTML = genderSeg(g); pickGender(); drawClasses(); });
   const drawClasses = () => {
-    $('#classes').innerHTML = Object.entries(CLASSES).map(([k, c]) => `
+    $('#classes').innerHTML = shownJobs().map(([k, c]) => `
       <button class="cls ${k === cls ? 'on' : ''}" data-c="${k}">
-        <div class="mini">${heroArt(k, 1)}</div><span class="arrow">→</span><div class="mini">${heroArt(k, MAX_STAGE)}</div>
-        <div class="grow"><b>${c.icon} ${esc(c.name)}</b><div class="sub">${esc(c.stages[0])} → ${esc(c.stages[MAX_STAGE - 1])}</div></div>
+        <div class="mini">${heroArt(k, 1)}</div><span class="arrow">→</span><div class="mini">${heroArt(k, maxOf(k))}</div>
+        <div class="grow"><b>${c.icon} ${esc(c.name)}</b><div class="sub">${esc(c.stages[0])} → ${esc(c.stages[maxOf(k) - 1])}</div></div>
       </button>`).join('');
     $('#introArt').innerHTML = heroArt(cls, 1);
     $('#introLine').innerHTML = t('당신은 {name}입니다.', { name: `<b>${esc(CLASSES[cls].stages[0])}</b>` });
@@ -1216,15 +1276,15 @@ function renderSetup() {
   $('#start').onclick = () => {
     const name = $('#nm').value.trim();
     if (!name) { $('#nm').focus(); return toast(t('이름을 써주세요'), '', true); }
-    D = { v: 1, hero: { name, cls, genders: { [cls]: setupGender }, created: Date.now() }, acts: defaultActs(), logs: [], custom: [], memos: [] };
+    D = migrate({ v: 1, hero: { name, cls, genders: { [cls]: setupGender }, created: Date.now() }, acts: defaultActs(), logs: [], custom: [], memos: [] });
     save(); tab = 'home'; render();
     toast(t('모험 시작!'), t('홈에서 오늘 한 일을 기록해 보세요'));
   };
 }
 
 // ---------- 공통 ----------
-function openSheet(html) { $('#sheet').innerHTML = html; $('#modal').classList.add('show'); }
-function closeSheet() { $('#modal').classList.remove('show'); }
+function openSheet(html) { $('#sheet').innerHTML = html; $('#modal').classList.add('show'); adBanner(false); }
+function closeSheet() { $('#modal').classList.remove('show'); adBanner(true); }
 $('#modal').onclick = e => { if (e.target.id === 'modal') closeSheet(); };
 function confirmSheet(title, body, okText, fn) {
   openSheet(`<h2>${title}</h2><p class="sub" style="line-height:1.6">${body}</p>
@@ -1236,6 +1296,45 @@ function toast(big, small = '', quiet = false) {
   $('#toast').innerHTML = `<div style="${quiet ? 'font-size:16px' : ''}">${esc(big)}${small ? `<small>${esc(small)}</small>` : ''}</div>`;
 }
 document.querySelectorAll('#nav button').forEach(b => b.onclick = () => { tab = b.dataset.tab; render(); });
+
+// 광고: 안드로이드 앱에서만 아래 메뉴 바로 위에 배너를 보여 줌 (웹에서는 아무것도 안 함)
+// 진짜 광고 (Play 스토어 출시용). 테스트 광고로 돌리려면 true. 내 앱의 진짜 광고를 직접 누르면 AdMob 계정이 정지될 수 있어요.
+const AD_TEST = false;
+const AD_BANNER_ID = 'ca-app-pub-4574026616244213/3174915449';
+const NATIVE = window.Capacitor?.isNativePlatform?.() && window.Capacitor.Plugins;  // 안드로이드 앱일 때만 (웹은 false)
+const AdMob = NATIVE && NATIVE.AdMob;
+let adState = '';                                   // '' 시작 전 · 'loading' · 'on' · 'off'(못 띄움)
+async function startAds() {
+  if (!AdMob || adState) return;
+  adState = 'loading';
+  try {
+    await AdMob.initialize({ initializeForTesting: AD_TEST });
+    // 유럽 등 동의가 필요한 지역이면 개인정보 동의 창을 먼저 보여 줌
+    const c = await AdMob.requestConsentInfo().catch(() => null);
+    if (c && c.isConsentFormAvailable && c.status === 'REQUIRED') await AdMob.showConsentForm().catch(() => {});
+    AdMob.addListener('bannerAdSizeChanged', s =>
+      document.documentElement.style.setProperty('--ad-h', `${Math.ceil(s.height || 0)}px`));
+    await AdMob.showBanner({ adId: AD_BANNER_ID, adSize: 'ADAPTIVE_BANNER', position: 'BOTTOM_CENTER',
+      margin: Math.round($('#nav').offsetHeight), isTesting: AD_TEST });
+    adState = 'on';
+    if ($('#modal').classList.contains('show')) adBanner(false);
+  } catch (e) { adState = 'off'; }
+}
+// 아래에서 올라오는 창이 열려 있는 동안엔 배너를 숨김 (버튼을 가리지 않게)
+function adBanner(show) {
+  if (adState !== 'on') return;
+  (show ? AdMob.resumeBanner() : AdMob.hideBanner()).catch(() => {});
+}
+
+// 안드로이드 뒤로가기: 열린 창 닫기 → 홈으로 → 홈에서 두 번 누르면 종료
+let backAt = 0;
+NATIVE?.App?.addListener('backButton', () => {
+  if ($('#modal').classList.contains('show')) return closeSheet();
+  if (D && tab !== 'home') { tab = 'home'; render(); return scrollTo(0, 0); }
+  if (Date.now() - backAt < 2000) return NATIVE.App.exitApp();
+  backAt = Date.now();
+  toast(t('한 번 더 누르면 앱이 닫혀요'), '', true);
+});
 
 // 고른 언어 파일을 불러온 뒤 첫 화면을 그림
 setLang(guessLang()).then(() => { render(); probeArt(); });
