@@ -60,7 +60,7 @@
   - **백업 저장**: 다운로드 대신 공유 창이 떠요. 카톡 나와의 채팅·드라이브·메일 등으로 보내 두면 돼요. 불러오기는 웹과 같아요.
   - **화면 위아래 여백**: 상태바·제스처 바에 가리지 않게 자동으로 여백을 둬요. 상태바 아이콘은 흰색(`capacitor.config.json`의 `SystemBars.style`).
 - Filesystem 플러그인이 Java 21을 써서, 처음 빌드할 때 Gradle이 Java 21을 자동으로 받아요(`android/settings.gradle`의 foojay 설정).
-- 앱 아이콘·시작 화면 그림: `python scripts/make-android-icons.py`로 다시 만들어요.
+- 앱 아이콘(거지 → 전설의 전사): 원본은 `scripts/icon.html`을 로컬 서버로 열어 캡처한 `assets/icon-master*.png`. `python scripts/make-android-icons.py`로 웹·안드로이드·스토어 아이콘과 시작 화면 그림을 다시 만들어요.
 - 앱 버전을 올릴 땐 `android/app/build.gradle`의 `versionCode`(1, 2, 3…)와 `versionName`을 올려요.
 - 앱 안의 기록은 웹 브라우저와 따로 저장돼요. 옮기려면 설정의 백업 저장 → 불러오기를 써요.
 - GitHub Pages에는 `android/`, `scripts/`, `package.json` 등을 올리지 않아도 돼요.

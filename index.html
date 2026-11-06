@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#1b1640">
 <meta name="description" content="공부와 운동을 기록하면 캐릭터가 성장하는 자기계발 RPG">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="icon" href="icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>레벨업 라이프</title>
 <style>
@@ -270,7 +270,7 @@ const loadScript = src => new Promise(ok => {
   document.head.appendChild(s);
 });
 // 번역 파일을 고치면 APP_V 를 올려서 옛 파일(브라우저 캐시)이 쓰이지 않게 함
-const APP_V = '3.3';
+const APP_V = '3.4';
 async function loadLang(code) {
   if (code === 'ko' || I18N[code]) return;
   if (!window.I18N_KEYS) await loadScript(`lang/keys.js?v=${APP_V}`);
