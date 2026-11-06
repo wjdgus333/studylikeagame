@@ -1,0 +1,11 @@
+.DS_Store
+Thumbs.db
+desktop.ini
+.claude/
+*.tmp
+levelup-backup-*.json
+node_modules/
+www/
+*.jks
+*.keystore
+android/.idea/

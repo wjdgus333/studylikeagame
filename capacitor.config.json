@@ -1,0 +1,11 @@
+{
+  "appId": "io.github.wjdgus333.levelup",
+  "appName": "레벨업 라이프",
+  "webDir": "www",
+  "backgroundColor": "#141030",
+  "plugins": {
+    "SystemBars": {
+      "style": "DARK"
+    }
+  }
+}

@@ -64,6 +64,14 @@ const CLASSES = {
     stages: ['아기 천사', '나팔 주운 아기 천사', '견습 천사', '수호천사', '빛의 천사', '구름 위의 천사', '대천사', '치천사', '천사장', '전설의 대천사장'] },
   demon: { name: '악마', icon: '😈', color: '#ef4444',
     stages: ['꼬마 임프', '삼지창 주운 임프', '말썽꾸러기 악마', '하급 악마', '불꽃 악마', '악마 기사', '대악마', '지옥의 공작', '마계 군주', '전설의 마왕'] },
+  // 한국 테마 특별 직업: 그림 7장(images/samtaegeuk-1~7.png)으로 7단계. 한국어로 볼 때만 목록에 나옴
+  samtaegeuk: { name: '삼조선', icon: '☯️', color: '#ef4444', special: true, koOnly: true,
+    imgs: [1, 2, 3, 4, 5, 6, 7].map(i => `images/samtaegeuk-${i}.png`),
+    stages: ['비어 있는 삼태극', '삼족오가 깨어난 태극', '봉황이 깃든 태극', '천마가 달리는 태극', '하늘(天)이 열린 삼태극', '땅(地)이 깨어난 삼태극', '전설의 천지인 삼태극'] },
+  // 한국 테마 특별 직업: 단청 그림체 봉황이 알에서 자라는 5단계 (images/goryeo-1~5.png). 한국어로 볼 때만
+  goryeo: { name: '고려봉황', icon: '🐦', color: '#84cc16', special: true, koOnly: true,
+    imgs: [1, 2, 3, 4, 5].map(i => `images/goryeo-${i}.png`),
+    stages: ['불꽃을 품은 봉황알', '갓 깨어난 아기 봉황', '날개를 펴는 어린 봉황', '구름을 타고 오르는 봉황', '전설의 고려봉황'] },
   slime: { name: '슬라임', icon: '🟢', color: '#4ade80',
     stages: ['아기 슬라임', '물방울 슬라임', '말랑 슬라임', '초록 슬라임', '큰 슬라임', '강철 슬라임', '황금 슬라임', '슬라임 기사', '슬라임 대장', '전설의 킹 슬라임'] },
 };
@@ -308,6 +316,12 @@ const AURA = { warrior: '#ff7043', mage: '#c084fc', archer: '#6ee7b7', rogue: '#
 function heroSVG(cls, stage, g = 'm') {
   const fem = g === 'f';
   if (cls === 'slime') return slimeSVG(stage, fem);  // 슬라임은 사람 몸이 아니라 따로 그림
+  const IC = CLASSES[cls];
+  if (IC && IC.imgs && !IC.custom) {                 // 그림 파일로 된 직업 (삼조선): 그림만 그대로
+    return `<svg viewBox="0 -14 120 164" xmlns="http://www.w3.org/2000/svg" class="hero-svg">` +
+      `<ellipse cx="60" cy="143" rx="40" ry="5" fill="rgba(0,0,0,.25)"/>` +
+      `<image href="${(typeof window !== 'undefined' && window.IMG_BASE || '') + IC.imgs[stage - 1]}" x="4" y="24" width="112" height="112"/></svg>`;
+  }
   const st = Math.floor((stage - 1) / 2), up = (stage - 1) % 2 === 1;
   const wt = up ? Math.min(st + 1, 4) : st;
   // weak: 종족 직업의 1~2단계. 종족 모습(fs=1)에 허름한 옷(WEAK)

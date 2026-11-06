@@ -1,0 +1,22 @@
+{
+  "name": "levelup-life",
+  "private": true,
+  "version": "1.0.0",
+  "description": "레벨업 라이프 안드로이드 앱 (Capacitor)",
+  "scripts": {
+    "build": "node scripts/build-www.js",
+    "sync": "node scripts/build-www.js && npx cap sync android",
+    "open": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor-community/admob": "^8.3.0",
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/core": "^8.6.0",
+    "@capacitor/filesystem": "^8.1.5",
+    "@capacitor/share": "^8.0.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.6.0"
+  }
+}
